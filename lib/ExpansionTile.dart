@@ -16,7 +16,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 ///   パッケージを探す
 ///     https://pub.dev/packages/flutter_sidebar
 ///     https://github.com/tusharsadhwani/scaffold_responsive
-///       完全に消えるのはいまいち
+///       完全に消えるのはいまいち。アイコンだけの状態が欲しい
 ///
 ///   Drawerを拡張する？
 
@@ -40,12 +40,8 @@ void main() {
 class MyScaffold extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    final flex = useProvider(flexProvider);
     return Scaffold(
       body: MyHomePage(),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () => flex.change(),
-      ),
     );
   }
 }
@@ -54,6 +50,8 @@ class MyHomePage extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final flex = useProvider(flexProvider.state);
+    final flexController = useProvider(flexProvider);
+
     return Row(
       children: [
         // NavigationRailでもConstrainedBoxが使われてる
@@ -64,13 +62,23 @@ class MyHomePage extends HookWidget {
             alignment: Alignment.topCenter,
             child: ListView(
               children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: IconButton(
+                    icon: const Icon(Icons.menu),
+                    onPressed: () => flexController.change(),
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
                 ExpansionTile(
                   trailing: flex == sideMenuflex ? null : SizedBox.shrink(),
                   expandedAlignment: Alignment.centerRight,
-                  // 折り返しを防ぐためにも単語１つで済ます
                   title: flex == sideMenuflex
                       ? Text(
                           'sample title',
+                          // はみ出したテキストは代替記号
                           overflow: TextOverflow.ellipsis,
                         )
                       : Icon(Icons.subtitles),
@@ -107,7 +115,20 @@ class MyHomePage extends HookWidget {
                     // ExpansionTileを使って1単語で済ませる方がいい
                     children: [Text('sample title'), Icon(Icons.arrow_back)],
                   ),
-                )
+                ),
+                // 子要素が無い場合もExpansionTileで統一できる？
+                //   -> できない。選択するときに線が入っちゃうから
+                ExpansionTile(
+                  trailing: SizedBox.shrink(),
+                  expandedAlignment: Alignment.centerRight,
+                  // 折り返しを防ぐためにも単語１つで済ます
+                  title: flex == sideMenuflex
+                      ? Text(
+                          'sample title',
+                          overflow: TextOverflow.ellipsis,
+                        )
+                      : Icon(Icons.subtitles),
+                ),
               ],
             ),
           ),
