@@ -13,5 +13,8 @@ void main() {
 
 class MyHomePage extends HookWidget {
   @override
-  Widget build(BuildContext context) {}
+  Widget build(BuildContext context) {
+    // TODO: implement build
+    throw UnimplementedError();
+  }
 }
