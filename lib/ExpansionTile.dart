@@ -69,7 +69,10 @@ class MyHomePage extends HookWidget {
                   expandedAlignment: Alignment.centerRight,
                   // 折り返しを防ぐためにも単語１つで済ます
                   title: flex == sideMenuflex
-                      ? Text('sampletitle')
+                      ? Text(
+                          'sample title',
+                          overflow: TextOverflow.ellipsis,
+                        )
                       : Icon(Icons.subtitles),
                   children: [
                     // childrenPaddingを使っても子要素同士の空白がうまくあかない
@@ -100,7 +103,8 @@ class MyHomePage extends HookWidget {
                 ),
                 ListTile(
                   title: Row(
-                    // これだと余白が少なくできる
+                    // これだと余白が少なくできるけど、少しは開けたいから、
+                    // ExpansionTileを使って1単語で済ませる方がいい
                     children: [Text('sample title'), Icon(Icons.arrow_back)],
                   ),
                 )
@@ -111,10 +115,55 @@ class MyHomePage extends HookWidget {
         VerticalDivider(thickness: 1, width: 1),
         Expanded(
           child: Center(
-            child: Text('Main'),
+            child: MyTabBarWidget(),
           ),
         )
       ],
+    );
+  }
+}
+
+const List<Tab> tabs = <Tab>[
+  Tab(text: 'Zeroth'),
+  Tab(text: 'First'),
+  Tab(text: 'Second'),
+];
+
+class MyTabBarWidget extends StatelessWidget {
+  const MyTabBarWidget({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: tabs.length,
+      // The Builder widget is used to have a different BuildContext to access
+      // closest DefaultTabController.
+      child: Builder(builder: (BuildContext context) {
+        final TabController tabController = DefaultTabController.of(context)!;
+        tabController.addListener(() {
+          if (!tabController.indexIsChanging) {
+            // Your code goes here.
+            // To get index of current tab use tabController.index
+          }
+        });
+        return Scaffold(
+          appBar: AppBar(
+            bottom: const TabBar(
+              tabs: tabs,
+            ),
+          ),
+          body: TabBarView(
+            children: tabs.map((Tab tab) {
+              return Center(
+                child: Text(
+                  tab.text! + ' Tab',
+                  style: Theme.of(context).textTheme.headline5,
+                ),
+              );
+            }).toList(),
+          ),
+        );
+      }),
     );
   }
 }
