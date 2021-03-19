@@ -4,6 +4,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// 矢印が右に移動するだけ
+/// 参考にしたURL
+/// https://stackoverflow.com/questions/65472240/what-is-fractionaltranslation-in-flutter
 void main() {
   runApp(ProviderScope(
       child: MaterialApp(
