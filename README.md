@@ -1,4 +1,4 @@
-webのダッシュボードっぽい左サイドメニューの調査
+webのダッシュボードっぽい左サイドメニューを作るための調査
 
 # 参考
 - https://github.com/flutter/flutter/issues/50276

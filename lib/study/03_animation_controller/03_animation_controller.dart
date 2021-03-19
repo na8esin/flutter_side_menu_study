@@ -4,6 +4,7 @@
 
 import 'package:flutter/material.dart';
 
+// https://github.com/flutter/samples/blob/master/animations/lib/src/basics/03_animation_controller.dart
 void main() => runApp(MaterialApp(
       home: AnimationControllerDemo(),
     ));
