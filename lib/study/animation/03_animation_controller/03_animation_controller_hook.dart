@@ -10,6 +10,7 @@ class AnimationControllerDemo extends HookWidget {
   Widget build(BuildContext context) {
     final controller = useAnimationController(duration: Duration(seconds: 1));
     // https://github.com/rrousselGit/flutter_hooks/issues/204
+    // を見て気づいた
     useListenable(controller);
 
     return Scaffold(
