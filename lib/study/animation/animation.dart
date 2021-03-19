@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+// https://github.com/flutter/gallery/blob/master/lib/studies/reply/adaptive_nav.dart
+// からの抜粋
 void main() {
   runApp(ProviderScope(
       child: MaterialApp(
@@ -16,44 +18,33 @@ void main() {
 class MyHomePage extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    final animationController = useAnimationController(
+    final controller = useAnimationController(
       duration: const Duration(milliseconds: 250),
     );
+    useListenable(controller);
     final Animation<double> animation = CurvedAnimation(
-      parent: animationController,
+      parent: controller,
       curve: Curves.easeInOut,
     );
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        SizedBox(
-          height: 56,
-          child: Transform.rotate(
-            angle: animation.value * math.pi,
-            child: const Icon(
-              Icons.arrow_left,
-              size: 32,
-            ),
+    return InkWell(
+      onTap: () {
+        if (controller.isDismissed) {
+          controller.forward();
+        } else if (controller.isCompleted) {
+          controller.reverse();
+        }
+      },
+      child: SizedBox(
+        height: 56,
+        child: Transform.rotate(
+          angle: animation.value * math.pi,
+          child: const Icon(
+            Icons.arrow_left,
+            size: 32,
           ),
         ),
-        SizedBox(
-          height: 56,
-          child: ElevatedButton.icon(
-              onPressed: () {
-                if (animationController.value < 1.0) {
-                  animationController.forward();
-                } else if (animationController.value > 0.0) {
-                  animationController.reverse();
-                }
-              },
-              icon: const Icon(
-                Icons.menu,
-                size: 32,
-              ),
-              label: Text('menu')),
-        ),
-      ],
+      ),
     );
   }
 }
