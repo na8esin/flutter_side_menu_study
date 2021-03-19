@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+/// 矢印が右に移動するだけ
 void main() {
   runApp(ProviderScope(
       child: MaterialApp(
