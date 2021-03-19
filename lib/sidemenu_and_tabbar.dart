@@ -6,7 +6,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// 足りない要素
-///   ハンバーガー -> いけそう
 ///   アニメーションしながら、広げたり閉じたりする -> OK
 ///     閉じるときって、サブメニューってどうすんの？文字？アイコン
 ///     そもそも閉じたり開いたりする必要ある？
@@ -19,8 +18,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 ///     https://pub.dev/packages/flutter_sidebar
 ///     https://github.com/tusharsadhwani/scaffold_responsive
 ///       完全に消えるのはいまいち。アイコンだけの状態が欲しい
-///
-///   Drawerを拡張する？
 
 void main() {
   runApp(ProviderScope(
@@ -44,31 +41,39 @@ class MyHomePage extends HookWidget {
     const _iconSizeWithPadding = 48.0;
     final controller = useAnimationController(
         duration: const Duration(milliseconds: 250), initialValue: 1.0);
+    final _animation = controller.drive(
+      // Offsetの指定が楽になる
+      Tween<Offset>(
+        begin: const Offset(0.0, 0.0),
+        end: const Offset(2.5, 0.0),
+      ),
+    );
+    final x = controller.value;
     useListenable(controller);
-
     return Row(
       children: [
         // NavigationRailでもConstrainedBoxが使われてる
         ConstrainedBox(
           constraints: BoxConstraints(
               minWidth: _iconSizeWithPadding,
-              maxWidth: (controller.value * 4 + 1) * _iconSize + 64),
+              // 初期が_iconSizeWithPaddingで最後は160になる
+              maxWidth: (x + 1) * _iconSizeWithPadding + x * 64),
           child: Align(
             alignment: Alignment.topCenter,
             child: ListView(
               children: [
-                Align(
-                  alignment: Alignment.topLeft,
-                  child: FractionalTranslation(
-                    translation: Offset(controller.value * 4, 0),
-                    child: InkWell(
-                      onTap: () {
-                        if (controller.isDismissed) {
-                          controller.forward();
-                        } else if (controller.isCompleted) {
-                          controller.reverse();
-                        }
-                      },
+                InkWell(
+                  onTap: () {
+                    if (controller.isDismissed) {
+                      controller.forward();
+                    } else if (controller.isCompleted) {
+                      controller.reverse();
+                    }
+                  },
+                  child: Align(
+                    alignment: Alignment.topLeft,
+                    child: FractionalTranslation(
+                      translation: _animation.value,
                       child: Transform.rotate(
                         angle: controller.value * math.pi,
                         child: Padding(
@@ -123,11 +128,16 @@ class MyHomePage extends HookWidget {
                   selected: true,
                 ),
                 ListTile(
-                  title: Row(
-                    // これだと余白が少なくできるけど、少しは開けたいから、
-                    // ExpansionTileを使って1単語で済ませる方がいい
-                    children: [Text('sample title3'), Icon(Icons.arrow_back)],
-                  ),
+                  title: controller.isCompleted
+                      ? Row(
+                          // これだと余白が少なくできるけど、少しは開けたいから、
+                          // ExpansionTileを使って1単語で済ませる方がいい
+                          children: [
+                            Text('sample title3'),
+                            Icon(Icons.arrow_back)
+                          ],
+                        )
+                      : Icon(Icons.android),
                 ),
                 // 子要素が無い場合もExpansionTileで統一できる？
                 //   -> できない。選択するときに線が入っちゃうから
