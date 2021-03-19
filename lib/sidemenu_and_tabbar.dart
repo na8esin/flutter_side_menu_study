@@ -18,6 +18,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 ///     https://pub.dev/packages/flutter_sidebar
 ///     https://github.com/tusharsadhwani/scaffold_responsive
 ///       完全に消えるのはいまいち。アイコンだけの状態が欲しい
+///     https://pub.dev/packages/responsive_scaffold
 
 void main() {
   runApp(ProviderScope(
@@ -39,6 +40,7 @@ class MyHomePage extends HookWidget {
   Widget build(BuildContext context) {
     const _iconSize = 32.0;
     const _iconSizeWithPadding = 48.0;
+    final selectIndex = useState(0);
     final controller = useAnimationController(
         duration: const Duration(milliseconds: 250), initialValue: 1.0);
     final _animation = controller.drive(
@@ -90,7 +92,15 @@ class MyHomePage extends HookWidget {
                 SizedBox(
                   height: 20,
                 ),
+                // ExpansionTileはontapもselectedもない
+                // プルダウンを開くと問答無用で選択状態になるから
+                // 他のtileとの整合性を保つには？
                 ExpansionTile(
+                  collapsedBackgroundColor: Colors.red,
+                  backgroundColor: Colors.blue,
+                  onExpansionChanged: (value) {
+                    // 開くとtrue閉まるとfalse
+                  },
                   trailing: controller.isCompleted ? null : SizedBox.shrink(),
                   expandedAlignment: Alignment.centerRight,
                   title: controller.isCompleted
@@ -117,17 +127,24 @@ class MyHomePage extends HookWidget {
                   ],
                 ),
                 ListTile(
+                  onTap: () {
+                    selectIndex.value = 1;
+                  },
                   // そもそもListTileの時点で、titleとtrailingの間の余白が大きい
                   title: controller.isCompleted
-                      ? Text('sampletitle2')
+                      ? Text('sample title2')
                       : Icon(Icons.person),
                   // 閉じたときの右側にある微妙な空白を調整するため
                   trailing: controller.isCompleted
                       ? Icon(Icons.arrow_back)
                       : SizedBox.shrink(),
-                  selected: true,
+                  selected: selectIndex.value == 1,
                 ),
                 ListTile(
+                  onTap: () {
+                    selectIndex.value = 2;
+                  },
+                  selected: selectIndex.value == 2,
                   title: controller.isCompleted
                       ? Row(
                           // これだと余白が少なくできるけど、少しは開けたいから、
