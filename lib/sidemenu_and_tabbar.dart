@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
@@ -5,7 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// 足りない要素
 ///   ハンバーガー -> いけそう
-///   アニメーションしながら、広げたり閉じたりする -> 大変
+///   アニメーションしながら、広げたり閉じたりする -> OK
 ///     閉じるときって、サブメニューってどうすんの？文字？アイコン
 ///     そもそも閉じたり開いたりする必要ある？
 ///   選択されてるメニューのアイコンを反転させる
@@ -19,17 +21,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 ///       完全に消えるのはいまいち。アイコンだけの状態が欲しい
 ///
 ///   Drawerを拡張する？
-
-final flexProvider = StateNotifierProvider((ref) => FlexController());
-final sideMenuflex = 3;
-
-class FlexController extends StateNotifier<int> {
-  FlexController() : super(sideMenuflex);
-
-  void change() {
-    state = state == sideMenuflex ? 1 : sideMenuflex;
-  }
-}
 
 void main() {
   runApp(ProviderScope(
@@ -49,35 +40,57 @@ class MyScaffold extends HookWidget {
 class MyHomePage extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    final flex = useProvider(flexProvider.state);
-    final flexController = useProvider(flexProvider);
+    const _iconSize = 32.0;
+    const _iconSizeWithPadding = 48.0;
+    final controller = useAnimationController(
+        duration: const Duration(milliseconds: 250), initialValue: 1.0);
+    useListenable(controller);
 
     return Row(
       children: [
         // NavigationRailでもConstrainedBoxが使われてる
         ConstrainedBox(
-          constraints:
-              BoxConstraints(maxWidth: flex == sideMenuflex ? 150.0 : 50),
+          constraints: BoxConstraints(
+              minWidth: _iconSizeWithPadding,
+              maxWidth: (controller.value * 4 + 1) * _iconSize + 64),
           child: Align(
             alignment: Alignment.topCenter,
             child: ListView(
               children: [
                 Align(
-                  alignment: Alignment.centerLeft,
-                  child: IconButton(
-                    icon: const Icon(Icons.menu),
-                    onPressed: () => flexController.change(),
+                  alignment: Alignment.topLeft,
+                  child: FractionalTranslation(
+                    translation: Offset(controller.value * 4, 0),
+                    child: InkWell(
+                      onTap: () {
+                        if (controller.isDismissed) {
+                          controller.forward();
+                        } else if (controller.isCompleted) {
+                          controller.reverse();
+                        }
+                      },
+                      child: Transform.rotate(
+                        angle: controller.value * math.pi,
+                        child: Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: const Icon(
+                            Icons.arrow_right,
+                            size: _iconSize,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
                 SizedBox(
                   height: 20,
                 ),
                 ExpansionTile(
-                  trailing: flex == sideMenuflex ? null : SizedBox.shrink(),
+                  trailing: controller.isCompleted ? null : SizedBox.shrink(),
                   expandedAlignment: Alignment.centerRight,
-                  title: flex == sideMenuflex
+                  title: controller.isCompleted
                       ? Text(
-                          'sample title',
+                          'sample title1',
                           // はみ出したテキストは代替記号
                           overflow: TextOverflow.ellipsis,
                         )
@@ -86,13 +99,13 @@ class MyHomePage extends HookWidget {
                     // childrenPaddingを使っても子要素同士の空白がうまくあかない
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: flex == sideMenuflex
+                      child: controller.isCompleted
                           ? Text('Text1')
                           : Icon(Icons.edit),
                     ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
-                      child: flex == sideMenuflex
+                      child: controller.isCompleted
                           ? Text('Text2')
                           : Icon(Icons.list),
                     ),
@@ -100,11 +113,11 @@ class MyHomePage extends HookWidget {
                 ),
                 ListTile(
                   // そもそもListTileの時点で、titleとtrailingの間の余白が大きい
-                  title: flex == sideMenuflex
-                      ? Text('sampletitle')
+                  title: controller.isCompleted
+                      ? Text('sampletitle2')
                       : Icon(Icons.person),
                   // 閉じたときの右側にある微妙な空白を調整するため
-                  trailing: flex == sideMenuflex
+                  trailing: controller.isCompleted
                       ? Icon(Icons.arrow_back)
                       : SizedBox.shrink(),
                   selected: true,
@@ -113,7 +126,7 @@ class MyHomePage extends HookWidget {
                   title: Row(
                     // これだと余白が少なくできるけど、少しは開けたいから、
                     // ExpansionTileを使って1単語で済ませる方がいい
-                    children: [Text('sample title'), Icon(Icons.arrow_back)],
+                    children: [Text('sample title3'), Icon(Icons.arrow_back)],
                   ),
                 ),
                 // 子要素が無い場合もExpansionTileで統一できる？
@@ -122,9 +135,9 @@ class MyHomePage extends HookWidget {
                   trailing: SizedBox.shrink(),
                   expandedAlignment: Alignment.centerRight,
                   // 折り返しを防ぐためにも単語１つで済ます
-                  title: flex == sideMenuflex
+                  title: controller.isCompleted
                       ? Text(
-                          'sample title',
+                          'sample title4',
                           overflow: TextOverflow.ellipsis,
                         )
                       : Icon(Icons.subtitles),

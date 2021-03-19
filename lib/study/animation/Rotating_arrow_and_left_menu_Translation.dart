@@ -25,7 +25,7 @@ class MyHomePage extends HookWidget {
     return Row(
       children: [
         ConstrainedBox(
-          // 160.0に合わせる
+          // (1 * 4 + 1) * 32 = 5 * 32 = 160.0に合わせる
           constraints:
               BoxConstraints(minWidth: (controller.value * 4 + 1) * _iconSize),
           child: Align(
