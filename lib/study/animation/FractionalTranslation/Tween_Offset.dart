@@ -23,7 +23,7 @@ class MyHomePage extends HookWidget {
       // Offsetの指定が楽になる
       Tween<Offset>(
         begin: const Offset(0.0, 0.0),
-        end: const Offset(2.5, 0.0),
+        end: const Offset(2.5, 0.0), // この値だとピッタリ収まる
       ),
     );
     useListenable(_controller);

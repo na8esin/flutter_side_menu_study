@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-/// 矢印が移動しながら、左側の領域のサイズが変わる
+/// 矢印が移動しながら回転し、左側の領域のサイズが変わる
 void main() {
   runApp(ProviderScope(
       child: MaterialApp(
@@ -25,12 +25,15 @@ class MyHomePage extends HookWidget {
     return Row(
       children: [
         ConstrainedBox(
-          // (1 * 4 + 1) * 32 = 5 * 32 = 160.0に合わせる
+          // 160.0くらいが見た目的にいい感じなので、
+          // (1 * 4 + 1) * 32 = 5 * 32
           constraints:
               BoxConstraints(minWidth: (controller.value * 4 + 1) * _iconSize),
           child: Align(
             alignment: Alignment.topLeft,
             child: FractionalTranslation(
+              // Tween<Offset>を使うと指定が簡単になるが、
+              // 最初は理解が難しくなるので使わない
               translation: Offset(controller.value * 4, 0),
               child: InkWell(
                 onTap: () {
