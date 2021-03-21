@@ -9,6 +9,9 @@ void main() {
 /// やろうと思ったこと
 ///   モバイルのソースを削除
 ///   hookで書き直す
+///   全部隠れ無いようにする
+///   iconを指定できるようにする
+/// 　　CustomExpansionTileをさらに拡張しないといけない
 /// 不満なところ
 ///   ハンバーガーを押すと全部隠れる
 class MyApp extends StatelessWidget {
@@ -44,6 +47,7 @@ class _MyHomePageState extends State<MyHomePage>
   late AnimationController _animationController;
   late Animation<double> _animation;
 
+  // dartは型がしっかりしてるのにjsonでの定義がいまいち
   final List<Map<String, dynamic>> tabData = [
     {
       'title': 'Chapter A',
@@ -235,7 +239,8 @@ class _MyHomePageState extends State<MyHomePage>
                 children: [
                   // ClipRectが無いと半分しか閉まらない
                   ClipRect(
-                    // 子がオーバーフローする可能性のあるwidgetってなんやねん
+                    // 子がオーバーフローする可能性のあるwidget
+                    // 左の領域外に移動した時に例外が発生しない？
                     child: SizedOverflowBox(
                       size: Size(300 * _animation.value, double.infinity),
                       child: sidebar,

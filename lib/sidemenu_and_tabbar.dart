@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
+/// 目標 : firebaseのコンソールみたいな
+/// ExpansionTileの足りない要素
+/// 　開いただけで（子要素を選択しなくても）選択状態になる
 /// 足りない要素
-///   アニメーションしながら、広げたり閉じたりする -> OK
-///     閉じるときって、サブメニューってどうすんの？文字？アイコン
-///     そもそも閉じたり開いたりする必要ある？
 ///   選択されてるメニューのアイコンを反転させる
 /// 　　icon, selectedIcon
 /// 　左メニュの選択状態って同期する？
