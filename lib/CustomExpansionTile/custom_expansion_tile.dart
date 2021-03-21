@@ -147,7 +147,7 @@ class CustomExpansionTile extends StatefulWidget {
   _ExpansionTileState createState() => _ExpansionTileState();
 }
 
-class _ExpansionTileState extends State<ExpansionTile>
+class _ExpansionTileState extends State<CustomExpansionTile>
     with SingleTickerProviderStateMixin {
   static final Animatable<double> _easeOutTween =
       CurveTween(curve: Curves.easeOut);
@@ -259,9 +259,9 @@ class _ExpansionTileState extends State<ExpansionTile>
   void didChangeDependencies() {
     final ThemeData theme = Theme.of(context);
     _borderColorTween.end = theme.dividerColor;
-    _headerColorTween
-      ..begin = theme.textTheme.subtitle1!.color
-      ..end = theme.accentColor;
+    // _headerColorTween
+    //   ..begin = theme.textTheme.subtitle1!.color
+    //   ..end = theme.accentColor;
     _iconColorTween
       ..begin = theme.unselectedWidgetColor
       ..end = theme.accentColor;
