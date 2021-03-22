@@ -46,6 +46,7 @@ class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
   void initState() {
     super.initState();
 
+    // ここが非同期だから一瞬初期化されない
     Future.delayed(Duration.zero, () {
       if (activeTabIndices == null) {
         final newActiveTabData = _getFirstTabIndex(widget.tabs, []);
@@ -109,7 +110,7 @@ class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
                 itemBuilder: (BuildContext context, int index) => SidebarItem(
                   widget.tabs[index],
                   widget.onTabChanged,
-                  activeTabIndices!,
+                  activeTabIndices,
                   setActiveTabIndices,
                   index: index,
                 ),
@@ -123,10 +124,12 @@ class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
   }
 }
 
+/// 再帰的なwidget
+/// 子要素はヘッダをタップした時に作られる
 class SidebarItem extends StatelessWidget {
   final Map<String, dynamic> data; // ここの型が雑
   final void Function(String) onTabChanged;
-  final List<int> activeTabIndices;
+  final List<int>? activeTabIndices;
   final void Function(List<int> newIndices) setActiveTabIndices;
   final int? index;
   final List<int>? indices;
@@ -144,7 +147,18 @@ class SidebarItem extends StatelessWidget {
           'Exactly one parameter out of [index, indices] has to be provided',
         );
 
-  bool _indicesMatch(List<int> a, List<int> b) {
+  /// _indicesMatchはListTileとCustomExpansionTileのselectedを決めるための関数
+  /// _indices, activeTabIndices
+  /// a[i] とb[i]が一つでも合わなければfalse。
+  /// 全部合えばtrue
+  /// ただし、はみ出した分は、比較対象にならない
+  ///
+  /// aとbのlengthが合わないのはどんな場合？
+  ///
+  /// 一回しまって、また開いたとしても選択中のものは選択中になる。
+  /// インデックスだけを別でstateで持ってるから？
+  bool _indicesMatch(List<int> a, List<int>? b) {
+    if (b == null) return false;
     for (int i = 0; i < min(a.length, b.length); i++) {
       if (a[i] != b[i]) return false;
     }

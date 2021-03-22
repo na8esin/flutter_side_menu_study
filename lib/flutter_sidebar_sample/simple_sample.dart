@@ -30,7 +30,8 @@ class MyHomePage extends HookWidget {
           'title': 'Chapter B',
         },
       ],
-      activeTabIndices: [],
+      // [0]で指定すると例外が発生しなくなるけどそれなら必須じゃね？
+      activeTabIndices: [0],
       onTabChanged: (String tabId) {},
     );
   }
