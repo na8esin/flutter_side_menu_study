@@ -85,6 +85,7 @@ class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
     });
   }
 
+  /// didChangeDependencies and build are almost identical.
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
