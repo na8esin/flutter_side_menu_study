@@ -110,7 +110,7 @@ class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
 }
 
 class SidebarItem extends StatelessWidget {
-  final Map<String, dynamic> data;
+  final Map<String, dynamic> data; // ここの型が雑
   final void Function(String) onTabChanged;
   final List<int> activeTabIndices;
   final void Function(List<int> newIndices) setActiveTabIndices;
@@ -172,8 +172,8 @@ class SidebarItem extends StatelessWidget {
         left: 16.0 + 20.0 * (_indices.length - 1),
         right: 12.0,
       ),
-      selected:
-          activeTabIndices != null && _indicesMatch(_indices, activeTabIndices),
+      selected: _indicesMatch(_indices, activeTabIndices),
+      // ここがベタでTextなのがいまいち
       title: Text(root['title']),
       children: children,
     );

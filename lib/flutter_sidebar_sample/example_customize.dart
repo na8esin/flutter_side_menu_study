@@ -211,49 +211,21 @@ class _MyHomePageState extends State<MyHomePage>
       ),
       body: AnimatedBuilder(
         animation: _animation,
-        builder: (_, __) => isMobile
-            ? Stack(
-                children: [
-                  GestureDetector(
-                    onHorizontalDragStart: onDragStart,
-                    onHorizontalDragUpdate: onDragUpdate,
-                    onHorizontalDragEnd: onDragEnd,
-                  ),
-                  // 右側のコンテンツ
-                  mainContent,
-                  if (_animation.value > 0)
-                    Container(
-                      color: Colors.black
-                          .withAlpha((150 * _animation.value).toInt()),
-                    ),
-                  if (_animation.value == 1)
-                    GestureDetector(
-                      onTap: _toggleSidebar,
-                      onHorizontalDragUpdate: dragCloseDrawer,
-                    ),
-                  ClipRect(
-                    child: SizedOverflowBox(
-                      size: Size(300 * _animation.value, double.infinity),
-                      child: sidebar,
-                    ),
-                  ),
-                ],
-              )
-            : Row(
-                children: [
-                  // ClipRectが無いと半分しか閉まらない
-                  ClipRect(
-                    // 子がオーバーフローする可能性のあるwidget
-                    // 左の領域外に移動した時に例外が発生しない？
-                    child: SizedOverflowBox(
-                      size: Size(300 * _animation.value, double.infinity),
-                      child: sidebar,
-                    ),
-                  ),
-                  // 右側のコンテンツ
-                  Expanded(child: mainContent),
-                ],
+        builder: (_, __) => Row(
+          children: [
+            // ClipRectが無いと半分しか閉まらない
+            ClipRect(
+              // 子がオーバーフローする可能性のあるwidget
+              // 左の領域外に移動した時に例外が発生しない？
+              child: SizedOverflowBox(
+                size: Size(300 * _animation.value, double.infinity),
+                child: sidebar,
               ),
+            ),
+            // 右側のコンテンツ
+            Expanded(child: mainContent),
+          ],
+        ),
       ),
     );
   }
