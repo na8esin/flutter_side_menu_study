@@ -11,8 +11,12 @@ void main() {
 ///   hookで書き直す
 ///   全部隠れ無いようにする
 ///   iconを指定できるようにする
-/// 　　CustomExpansionTileをさらに拡張しないといけない
-/// 不満なところ
+/// 　　CustomExpansionTileのtitleはwidgetなのでiconを指定することはできる
+/// 子要素をタップすると親要素の色が変わる
+///   親のタイトルにstateを仕込んでおいて子要素からproviderで返ればいい
+/// flutter_Sidebarのいまいちなところ
+///   CustomExpansionTileのtitleが Text固定だというところ
+/// このサンプルの不満なところ
 ///   ハンバーガーを押すと全部隠れる
 class MyApp extends StatelessWidget {
   @override

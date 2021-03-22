@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'custom_expansion_tile.dart';
+import 'my_custom_expansion_tile.dart';
 
 void main() {
   runApp(ProviderScope(
@@ -17,7 +17,7 @@ void main() {
 class MyHomePage extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    return CustomExpansionTile(
+    return MyCustomExpansionTile(
       title: Text('title'),
       children: [
         Text('child1'),
