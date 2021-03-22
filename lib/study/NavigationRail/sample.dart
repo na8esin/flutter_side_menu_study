@@ -11,6 +11,11 @@ void main() {
   ))));
 }
 
+/// labelにExpansionTileを仕込むと
+/// BoxConstraints forces an infinite width.発生
+/// label: Column(children: [Text('child1'), Text('child2')],),
+///   だと発生しないRowも大丈夫
+///   ListTileだと発生する
 class MyHomePage extends HookWidget {
   @override
   Widget build(BuildContext context) {
@@ -26,13 +31,11 @@ class MyHomePage extends HookWidget {
           labelType: NavigationRailLabelType.selected,
           destinations: [
             NavigationRailDestination(
-              icon: Icon(Icons.favorite_border),
-              selectedIcon: Icon(Icons.favorite),
-              label: ExpansionTile(
-                title: Text('First'),
-                children: [Text('child1'), Text('child2')],
-              ),
-            ),
+                icon: Icon(Icons.favorite_border),
+                selectedIcon: Icon(Icons.favorite),
+                label: ListTile(
+                  title: Text('list tile'),
+                )),
             NavigationRailDestination(
               icon: Icon(Icons.bookmark_border),
               selectedIcon: Icon(Icons.book),

@@ -94,7 +94,7 @@ class MyHomePage extends HookWidget {
                 ),
                 // ExpansionTileはontapもselectedもない
                 // プルダウンを開くと問答無用で選択状態になるから
-                // 他のtileとの整合性を保つには？
+                // 他のtileとの整合性を保つにはカスタマイズしかない
                 ExpansionTile(
                   collapsedBackgroundColor: Colors.red,
                   backgroundColor: Colors.blue,
