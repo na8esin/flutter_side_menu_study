@@ -4,8 +4,20 @@ import 'package:flutter/material.dart';
 
 import 'study_custom_expansion_tile.dart';
 
+/// titleとchildrenを持ったwidget
+class Tab extends StatelessWidget {
+  Tab({required this.child});
+  final Widget child;
+  @override
+  Widget build(BuildContext context) {
+    return child;
+  }
+}
+
 class Sidebar extends StatefulWidget {
+  // widgetのmapとかじゃないと
   final List<Map<String, dynamic>> tabs;
+  // 引数のstringはtabId. tabIdってなに？
   final void Function(String) onTabChanged;
   final List<int> activeTabIndices;
 
@@ -17,8 +29,8 @@ class Sidebar extends StatefulWidget {
   // }) : super(key: key);
 
   const Sidebar.fromJson({
-    Key key,
-    @required this.tabs,
+    Key? key,
+    required this.tabs,
     this.onTabChanged,
     this.activeTabIndices,
   }) : super(key: key);
@@ -53,6 +65,8 @@ class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
     String tabId;
     if (tabs.length > 0) {
       Map<String, dynamic> firstTab = tabs[0];
+
+      // サンプルだとidなんて無くて、titleしかないがそれぞれ違うからいいのか
       tabId = firstTab['id'] ?? firstTab['title'];
       indices.add(0);
 

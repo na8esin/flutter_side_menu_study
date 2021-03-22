@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'package:flutter_sidebar/flutter_sidebar.dart';
+import 'study_flutter_sidebar.dart';
 
 void main() {
   runApp(MyApp());

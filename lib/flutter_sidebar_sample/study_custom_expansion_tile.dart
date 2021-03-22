@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 
 class CustomExpansionTile extends StatefulWidget {
   const CustomExpansionTile({
-    Key key,
+    Key? key,
     this.leading,
-    @required this.title,
+    required this.title,
     this.subtitle,
     this.onExpansionChanged,
+    // 子要素を広げたりする方法って？
     this.children = const <Widget>[],
     this.trailing,
     this.selected,
@@ -95,6 +96,7 @@ class _CustomExpansionTileState extends State<CustomExpansionTile>
       widget.onExpansionChanged(_isExpanded);
   }
 
+  // ここのchildってなんだ？
   Widget _buildChildren(BuildContext context, Widget child) {
     return Container(
       decoration: BoxDecoration(
