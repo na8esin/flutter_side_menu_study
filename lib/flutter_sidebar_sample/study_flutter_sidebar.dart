@@ -19,19 +19,12 @@ class Sidebar extends StatefulWidget {
   final List<Map<String, dynamic>> tabs;
   // 引数のstringはtabId. tabIdってなに？
   final void Function(String) onTabChanged;
-  final List<int> activeTabIndices;
-
-  // const Sidebar({
-  //   Key key,
-  //   @required this.tabs,
-  //   this.onTabChanged,
-  //   this.activeTabIndices,
-  // }) : super(key: key);
+  final List<int>? activeTabIndices;
 
   const Sidebar.fromJson({
     Key? key,
     required this.tabs,
-    this.onTabChanged,
+    required this.onTabChanged,
     this.activeTabIndices,
   }) : super(key: key);
 
@@ -39,10 +32,16 @@ class Sidebar extends StatefulWidget {
   _SidebarState createState() => _SidebarState();
 }
 
+class FirstTabIndex {
+  FirstTabIndex(this.indices, this.tabId);
+  final List<int> indices;
+  final String tabId;
+}
+
 class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
   static const double _maxSidebarWidth = 300;
   double _sidebarWidth = _maxSidebarWidth;
-  List<int> activeTabIndices;
+  List<int>? activeTabIndices;
 
   void initState() {
     super.initState();
@@ -50,8 +49,8 @@ class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
     Future.delayed(Duration.zero, () {
       if (activeTabIndices == null) {
         final newActiveTabData = _getFirstTabIndex(widget.tabs, []);
-        List<int> newActiveTabIndices = newActiveTabData[0];
-        String tabId = newActiveTabData[1];
+        List<int> newActiveTabIndices = newActiveTabData.indices;
+        String tabId = newActiveTabData.tabId;
         if (newActiveTabIndices.length > 0) {
           setActiveTabIndices(newActiveTabIndices);
           if (widget.onTabChanged != null) widget.onTabChanged(tabId);
@@ -60,9 +59,9 @@ class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
     });
   }
 
-  List<Object> _getFirstTabIndex(
+  FirstTabIndex _getFirstTabIndex(
       List<Map<String, dynamic>> tabs, List<int> indices) {
-    String tabId;
+    String tabId = '';
     if (tabs.length > 0) {
       Map<String, dynamic> firstTab = tabs[0];
 
@@ -72,11 +71,11 @@ class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
 
       if (firstTab['children'] != null) {
         final tabData = _getFirstTabIndex(firstTab['children'], indices);
-        indices = tabData[0];
-        tabId = tabData[1];
+        indices = tabData.indices;
+        tabId = tabData.tabId;
       }
     }
-    return [indices, tabId];
+    return FirstTabIndex(indices, tabId);
   }
 
   void setActiveTabIndices(List<int> newIndices) {
@@ -110,7 +109,7 @@ class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
                 itemBuilder: (BuildContext context, int index) => SidebarItem(
                   widget.tabs[index],
                   widget.onTabChanged,
-                  activeTabIndices,
+                  activeTabIndices!,
                   setActiveTabIndices,
                   index: index,
                 ),
@@ -129,8 +128,8 @@ class SidebarItem extends StatelessWidget {
   final void Function(String) onTabChanged;
   final List<int> activeTabIndices;
   final void Function(List<int> newIndices) setActiveTabIndices;
-  final int index;
-  final List<int> indices;
+  final int? index;
+  final List<int>? indices;
 
   const SidebarItem(
     this.data,
@@ -153,7 +152,7 @@ class SidebarItem extends StatelessWidget {
   }
 
   Widget _buildTiles(Map<String, dynamic> root) {
-    final _indices = indices ?? [index];
+    final _indices = indices ?? [index!];
     if (root['children'] == null)
       return ListTile(
         selected: activeTabIndices != null &&

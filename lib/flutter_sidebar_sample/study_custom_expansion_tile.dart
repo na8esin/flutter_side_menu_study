@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 
 class CustomExpansionTile extends StatefulWidget {
+  // オプションがこれだけしかないから、
+  // 子要素を選択した時にヘッダーが選択される仕組みはsidebarの方なんだろうね
   const CustomExpansionTile({
     Key? key,
     this.leading,
     required this.title,
     this.subtitle,
     this.onExpansionChanged,
-    // 子要素を広げたりする方法って？
     this.children = const <Widget>[],
     this.trailing,
-    this.selected,
+    this.selected = false,
     this.initiallyExpanded = false,
     this.maintainState = false,
     this.tilePadding,
@@ -26,19 +27,19 @@ class CustomExpansionTile extends StatefulWidget {
         ),
         super(key: key);
 
-  final Widget leading;
+  final Widget? leading;
   final Widget title;
-  final Widget subtitle;
-  final ValueChanged<bool> onExpansionChanged;
+  final Widget? subtitle;
+  final ValueChanged<bool>? onExpansionChanged;
   final List<Widget> children;
-  final Widget trailing;
+  final Widget? trailing;
   final bool selected;
   final bool initiallyExpanded;
   final bool maintainState;
-  final EdgeInsetsGeometry tilePadding;
-  final Alignment expandedAlignment;
-  final CrossAxisAlignment expandedCrossAxisAlignment;
-  final EdgeInsetsGeometry childrenPadding;
+  final EdgeInsetsGeometry? tilePadding;
+  final Alignment? expandedAlignment;
+  final CrossAxisAlignment? expandedCrossAxisAlignment;
+  final EdgeInsetsGeometry? childrenPadding;
 
   @override
   _CustomExpansionTileState createState() => _CustomExpansionTileState();
@@ -52,9 +53,9 @@ class _CustomExpansionTileState extends State<CustomExpansionTile>
       Tween<double>(begin: 0.0, end: 0.5);
   static final _expansionDuration = Duration(milliseconds: 200);
 
-  AnimationController _controller;
-  Animation<double> _iconTurns;
-  Animation<double> _heightFactor;
+  late AnimationController _controller;
+  late Animation<double> _iconTurns;
+  late Animation<double> _heightFactor;
 
   bool _isExpanded = false;
 
@@ -93,11 +94,11 @@ class _CustomExpansionTileState extends State<CustomExpansionTile>
       PageStorage.of(context)?.writeState(context, _isExpanded);
     });
     if (widget.onExpansionChanged != null)
-      widget.onExpansionChanged(_isExpanded);
+      widget.onExpansionChanged!(_isExpanded);
   }
 
-  // ここのchildってなんだ？
-  Widget _buildChildren(BuildContext context, Widget child) {
+  // ここのchildはAnimatedBuilderのchildに指定するchild
+  Widget _buildChildren(BuildContext context, Widget? child) {
     return Container(
       decoration: BoxDecoration(
         color: Colors.transparent,
@@ -134,9 +135,11 @@ class _CustomExpansionTileState extends State<CustomExpansionTile>
   @override
   Widget build(BuildContext context) {
     final bool closed = !_isExpanded && _controller.isDismissed;
+    // maintainState: 見えないときの子要素を保持するかどうか
     final bool shouldRemoveChildren = closed && !widget.maintainState;
 
     // 下の階層の要素達
+    // Offstage: widgetを非表示にする
     final Widget result = Offstage(
         child: TickerMode(
           child: Padding(
@@ -154,6 +157,7 @@ class _CustomExpansionTileState extends State<CustomExpansionTile>
     return AnimatedBuilder(
       animation: _controller.view,
       builder: _buildChildren,
+      // maintainState=falseならnullにして完全消去
       child: shouldRemoveChildren ? null : result,
     );
   }
