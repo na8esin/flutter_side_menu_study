@@ -6,39 +6,37 @@ import 'package:flutter/material.dart';
 import 'study_custom_expansion_tile.dart';
 
 /// titleとchildrenを持ったwidget
-class Tab extends StatelessWidget {
-  Tab({required this.child});
-  final Widget child;
-  @override
-  Widget build(BuildContext context) {
-    return child;
-  }
+class SidebarTab {
+  SidebarTab({required this.key, required this.title, this.children});
+  final List<SidebarTab>? children;
+  final Widget title;
+  final Key key;
+}
+
+class FirstTabIndex {
+  FirstTabIndex(this.indices, this.key);
+  final List<int> indices;
+  final Key? key;
 }
 
 /// SidebarがすべてのSidebarItemの頂点にいて制御している
 /// SidebarItemは再帰的に増えていく
 class Sidebar extends StatefulWidget {
+  Sidebar(
+      {required this.tabs,
+      required this.onTabChanged,
+      this.activeTabIndices,
+      this.key})
+      : super(key: key);
+  final Key? key;
   // widgetのmapとかじゃないと
-  final List<Map<String, dynamic>> tabs;
+  final List<SidebarTab> tabs;
   // 引数のstringはtabId. tabIdってなに？
-  final void Function(String) onTabChanged;
+  final void Function(Key) onTabChanged;
   final List<int>? activeTabIndices;
-
-  const Sidebar.fromJson({
-    Key? key,
-    required this.tabs,
-    required this.onTabChanged,
-    this.activeTabIndices,
-  }) : super(key: key);
 
   @override
   _SidebarState createState() => _SidebarState();
-}
-
-class FirstTabIndex {
-  FirstTabIndex(this.indices, this.tabId);
-  final List<int> indices;
-  final String tabId;
 }
 
 class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
@@ -73,21 +71,19 @@ class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
   /// indices: 最初のタブが何階層あるか。
   ///   2階層 [0]: 0, [1]: 0
   ///   1階層 [0]: 0,
-  FirstTabIndex _getFirstTabIndex(
-      List<Map<String, dynamic>> tabs, List<int> indices) {
-    String tabId = '';
+  FirstTabIndex _getFirstTabIndex(List<SidebarTab> tabs, List<int> indices) {
+    Key? tabId;
     if (tabs.length > 0) {
-      Map<String, dynamic> firstTab = tabs[0];
+      SidebarTab firstTab = tabs[0];
 
-      // サンプルだとidなんて無くて、titleしかないがそれぞれ違うからいいのか
-      tabId = firstTab['id'] ?? firstTab['title'];
+      tabId = firstTab.key;
       indices.add(0);
 
-      if (firstTab['children'] != null) {
+      if (firstTab.children != null) {
         // 再帰的に実行
-        final tabData = _getFirstTabIndex(firstTab['children'], indices);
+        final tabData = _getFirstTabIndex(firstTab.children!, indices);
         indices = tabData.indices;
-        tabId = tabData.tabId;
+        tabId = tabData.key;
       }
     }
     return FirstTabIndex(indices, tabId);
@@ -144,8 +140,8 @@ class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
 /// 再帰的なwidget
 /// 子要素はヘッダをタップした時に作られる
 class SidebarItem extends StatelessWidget {
-  final Map<String, dynamic> data; // ここの型が雑
-  final void Function(String) onTabChanged;
+  final SidebarTab data;
+  final void Function(Key) onTabChanged;
   final List<int>? activeTabIndices;
   final void Function(List<int> newIndices) setActiveTabIndices;
   final int? index;
@@ -184,25 +180,27 @@ class SidebarItem extends StatelessWidget {
 
   /// buildメソッドとの違いは無い
   /// rootはthis.data
-  Widget _buildTiles(Map<String, dynamic> root) {
+  @override
+  Widget build(BuildContext context) {
+    final root = data;
     final _indices = indices ?? [index!];
-    if (root['children'] == null)
+    if (root.children == null)
       return ListTile(
         selected: activeTabIndices != null &&
             _indicesMatch(_indices, activeTabIndices),
         contentPadding:
             EdgeInsets.only(left: 16.0 + 20.0 * (_indices.length - 1)),
-        title: Text(root['title']),
+        title: root.title,
         onTap: () {
           setActiveTabIndices(_indices);
-          if (onTabChanged != null) onTabChanged(root['id'] ?? root['title']);
+          if (onTabChanged != null) onTabChanged(root.key);
         },
       );
 
     // 再帰的に子要素を作るところ
     List<Widget> children = [];
-    for (int i = 0; i < root['children'].length; i++) {
-      Map<String, dynamic> item = root['children'][i];
+    for (int i = 0; i < root.children!.length; i++) {
+      final item = root.children![i];
       final itemIndices = [..._indices, i];
       children.add(
         SidebarItem(
@@ -221,14 +219,8 @@ class SidebarItem extends StatelessWidget {
         right: 12.0,
       ),
       selected: _indicesMatch(_indices, activeTabIndices),
-      // ここがベタでTextなのがいまいち
-      title: Text(root['title']),
+      title: root.title,
       children: children,
     );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return _buildTiles(data);
   }
 }
