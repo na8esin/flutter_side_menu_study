@@ -45,7 +45,7 @@ class Sidebar extends StatefulWidget {
 }
 
 class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
-  static const double _maxSidebarWidth = 300;
+  static const double _maxSidebarWidth = 160;
   double _sidebarWidth = _maxSidebarWidth;
   List<int>? activeTabIndices;
 

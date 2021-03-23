@@ -4,7 +4,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'study_flutter_sidebar.dart';
-import 'study_flutter_sidebar.dart';
 
 void main() {
   runApp(ProviderScope(child: MaterialApp(home: MyScaffold())));
@@ -33,13 +32,19 @@ class MyHomePage extends HookWidget {
     return Sidebar(
       tabs: [
         // objectKeyとかの方がいいかも？
-        SidebarTab(key: ValueKey('Chapter A'), title: Text('Chapter A')),
         SidebarTab(
-          key: ValueKey('Chapter B'),
-          title: Text('Chapter B'),
+            key: ValueKey('Chap A'),
+            title: Text(
+              'Chapter A',
+              // なぜか効かない
+              overflow: TextOverflow.ellipsis,
+            )),
+        SidebarTab(
+          key: ValueKey('Chap B'),
+          title: Text('Chap B'),
           children: [
-            SidebarTab(key: ValueKey('Chapter B1'), title: Text('Chapter B1')),
-            SidebarTab(key: ValueKey('Chapter B2'), title: Text('Chapter B2')),
+            SidebarTab(key: ValueKey('Chap B1'), title: Text('Chap B1')),
+            SidebarTab(key: ValueKey('Chap B2'), title: Text('Chap B2')),
           ],
         ),
       ],

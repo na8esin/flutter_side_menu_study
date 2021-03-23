@@ -38,18 +38,11 @@ class MyScaffold extends HookWidget {
 class MyHomePage extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    const _iconSize = 32.0;
     const _iconSizeWithPadding = 48.0;
     final selectIndex = useState(0);
     final controller = useAnimationController(
         duration: const Duration(milliseconds: 250), initialValue: 1.0);
-    final _animation = controller.drive(
-      // Offsetの指定が楽になる
-      Tween<Offset>(
-        begin: const Offset(0.0, 0.0),
-        end: const Offset(2.5, 0.0),
-      ),
-    );
+
     final x = controller.value;
     useListenable(controller);
     return Row(
@@ -64,30 +57,8 @@ class MyHomePage extends HookWidget {
             alignment: Alignment.topCenter,
             child: ListView(
               children: [
-                InkWell(
-                  onTap: () {
-                    if (controller.isDismissed) {
-                      controller.forward();
-                    } else if (controller.isCompleted) {
-                      controller.reverse();
-                    }
-                  },
-                  child: Align(
-                    alignment: Alignment.topLeft,
-                    child: FractionalTranslation(
-                      translation: _animation.value,
-                      child: Transform.rotate(
-                        angle: controller.value * math.pi,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: const Icon(
-                            Icons.arrow_right,
-                            size: _iconSize,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
+                RotatingTranslationArrow(
+                  controller: controller,
                 ),
                 SizedBox(
                   height: 20,
@@ -180,6 +151,49 @@ class MyHomePage extends HookWidget {
           ),
         )
       ],
+    );
+  }
+}
+
+class RotatingTranslationArrow extends StatelessWidget {
+  const RotatingTranslationArrow({Key? key, required this.controller})
+      : super(key: key);
+  final AnimationController controller;
+
+  @override
+  Widget build(BuildContext context) {
+    const _iconSize = 32.0;
+    final _animation = controller.drive(
+      // Offsetの指定が楽になる
+      Tween<Offset>(
+        begin: const Offset(0.0, 0.0),
+        end: const Offset(2.5, 0.0),
+      ),
+    );
+    return InkWell(
+      onTap: () {
+        if (controller.isDismissed) {
+          controller.forward();
+        } else if (controller.isCompleted) {
+          controller.reverse();
+        }
+      },
+      child: Align(
+        alignment: Alignment.topLeft,
+        child: FractionalTranslation(
+          translation: _animation.value,
+          child: Transform.rotate(
+            angle: controller.value * math.pi,
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: const Icon(
+                Icons.arrow_right,
+                size: _iconSize,
+              ),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
