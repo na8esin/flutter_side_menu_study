@@ -1,3 +1,4 @@
+import 'dart:developer';
 import 'dart:math' show min;
 
 import 'package:flutter/material.dart';
@@ -14,6 +15,8 @@ class Tab extends StatelessWidget {
   }
 }
 
+/// SidebarがすべてのSidebarItemの頂点にいて制御している
+/// SidebarItemは再帰的に増えていく
 class Sidebar extends StatefulWidget {
   // widgetのmapとかじゃないと
   final List<Map<String, dynamic>> tabs;
@@ -51,15 +54,25 @@ class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
       if (activeTabIndices == null) {
         final newActiveTabData = _getFirstTabIndex(widget.tabs, []);
         List<int> newActiveTabIndices = newActiveTabData.indices;
-        String tabId = newActiveTabData.tabId;
+        //String tabId = newActiveTabData.tabId;
         if (newActiveTabIndices.length > 0) {
+          // ここをコメントアウトすると初期で一番最初のタブが選択状態にならない
           setActiveTabIndices(newActiveTabIndices);
-          if (widget.onTabChanged != null) widget.onTabChanged(tabId);
+          // ここをコメントアウトにしてもonTabChangedはあとで登録されるっぽい
+          // 最初のtabのchildrenが無かったとしても呼び出し元のprintでtabIdは出る
+          //if (widget.onTabChanged != null) widget.onTabChanged(tabId);
         }
       }
     });
   }
 
+  /// こいつは初期化処理にしか使われてない
+  /// メソッド名通り最初のタブしか処理されてない
+  ///
+  /// tabId: 最初のタブのchildrenの最初のタブ
+  /// indices: 最初のタブが何階層あるか。
+  ///   2階層 [0]: 0, [1]: 0
+  ///   1階層 [0]: 0,
   FirstTabIndex _getFirstTabIndex(
       List<Map<String, dynamic>> tabs, List<int> indices) {
     String tabId = '';
@@ -71,6 +84,7 @@ class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
       indices.add(0);
 
       if (firstTab['children'] != null) {
+        // 再帰的に実行
         final tabData = _getFirstTabIndex(firstTab['children'], indices);
         indices = tabData.indices;
         tabId = tabData.tabId;
@@ -106,14 +120,17 @@ class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
           ),
           Expanded(
             child: Material(
+              // ここは第一階層を処理するListView
+              // 二階層以降はSidebarItemの再帰処理で作るから
               child: ListView.builder(
                 itemBuilder: (BuildContext context, int index) => SidebarItem(
-                  widget.tabs[index],
-                  widget.onTabChanged,
-                  activeTabIndices,
-                  setActiveTabIndices,
+                  data: widget.tabs[index],
+                  onTabChanged: widget.onTabChanged,
+                  activeTabIndices: activeTabIndices,
+                  setActiveTabIndices: setActiveTabIndices,
                   index: index,
                 ),
+                // 第一階層のListのlength
                 itemCount: widget.tabs.length,
               ),
             ),
@@ -134,11 +151,11 @@ class SidebarItem extends StatelessWidget {
   final int? index;
   final List<int>? indices;
 
-  const SidebarItem(
-    this.data,
-    this.onTabChanged,
-    this.activeTabIndices,
-    this.setActiveTabIndices, {
+  const SidebarItem({
+    required this.data,
+    required this.onTabChanged,
+    required this.activeTabIndices,
+    required this.setActiveTabIndices,
     this.index,
     this.indices,
   }) : assert(
@@ -165,6 +182,8 @@ class SidebarItem extends StatelessWidget {
     return true;
   }
 
+  /// buildメソッドとの違いは無い
+  /// rootはthis.data
   Widget _buildTiles(Map<String, dynamic> root) {
     final _indices = indices ?? [index!];
     if (root['children'] == null)
@@ -180,16 +199,17 @@ class SidebarItem extends StatelessWidget {
         },
       );
 
+    // 再帰的に子要素を作るところ
     List<Widget> children = [];
     for (int i = 0; i < root['children'].length; i++) {
       Map<String, dynamic> item = root['children'][i];
       final itemIndices = [..._indices, i];
       children.add(
         SidebarItem(
-          item,
-          onTabChanged,
-          activeTabIndices,
-          setActiveTabIndices,
+          data: item,
+          onTabChanged: onTabChanged,
+          activeTabIndices: activeTabIndices,
+          setActiveTabIndices: setActiveTabIndices,
           indices: itemIndices,
         ),
       );

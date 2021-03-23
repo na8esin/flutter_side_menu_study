@@ -21,18 +21,24 @@ class MyHomePage extends HookWidget {
       tabs: [
         {
           'title': 'Chapter A',
+        },
+        {
+          'title': 'Chapter B',
           'children': [
             {'title': 'Chapter A1'},
             {'title': 'Chapter A2'},
           ],
         },
-        {
-          'title': 'Chapter B',
-        },
       ],
       // [0]で指定すると例外が発生しなくなるけどそれなら必須じゃね？
+      // activeTabIndicesを外から与える意味って？
+      // [0]を[1]に変えたところで初期で'Chapter B'が選択されてたりはしない
       activeTabIndices: [0],
-      onTabChanged: (String tabId) {},
+      // ListTileのonTapにそのまま渡される
+      onTabChanged: (String tabId) {
+        // 右の画面を変えたりする
+        print(tabId);
+      },
     );
   }
 }
