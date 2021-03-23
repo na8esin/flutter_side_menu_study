@@ -115,8 +115,9 @@ class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
       width: _sidebarWidth,
       child: Column(
         children: [
+          // header部分。必要？
           SizedBox(
-            height: 150,
+            height: 50,
             child: Container(color: Theme.of(context).primaryColor),
           ),
           Expanded(

@@ -28,8 +28,11 @@ class MyHomePage extends HookWidget {
   @override
   Widget build(BuildContext context) {
     // 一つしか無い場合は常に選択状態。そりゃそうか。
+    // sidebarTabにPathを入れられるようにすれば便利？
+    // ブラウザバックとうまく連動できるかな？
     return Sidebar(
       tabs: [
+        // objectKeyとかの方がいいかも？
         SidebarTab(key: ValueKey('Chapter A'), title: Text('Chapter A')),
         SidebarTab(
           key: ValueKey('Chapter B'),
@@ -47,6 +50,7 @@ class MyHomePage extends HookWidget {
       // ListTileのonTapにそのまま渡される
       onTabChanged: (Key tabId) {
         // 右の画面を変えたりする
+        // StateNotifierとかで
         print(tabId);
       },
     );
