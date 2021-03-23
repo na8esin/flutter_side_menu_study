@@ -67,7 +67,7 @@ class _CustomExpansionTileState extends State<CustomExpansionTile>
     _heightFactor = _controller.drive(_easeInTween);
     _iconTurns = _controller.drive(_halfTween.chain(_easeInTween));
 
-    _isExpanded = PageStorage.of(context)?.readState(context) as bool ??
+    _isExpanded = PageStorage.of(context)?.readState(context) as bool? ??
         widget.initiallyExpanded;
     if (_isExpanded) _controller.value = 1.0;
   }
@@ -108,7 +108,7 @@ class _CustomExpansionTileState extends State<CustomExpansionTile>
         children: <Widget>[
           // ヘッダーの部分も結局はListTile
           ListTile(
-            selected: widget.selected ?? false,
+            selected: widget.selected,
             onTap: _handleTap,
             contentPadding: widget.tilePadding,
             leading: widget.leading,
