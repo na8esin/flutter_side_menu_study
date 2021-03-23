@@ -4,13 +4,24 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'study_flutter_sidebar.dart';
+import 'study_flutter_sidebar.dart';
 
 void main() {
-  runApp(ProviderScope(
-      child: MaterialApp(
-          home: Scaffold(
-    body: MyHomePage(),
-  ))));
+  runApp(ProviderScope(child: MaterialApp(home: MyScaffold())));
+}
+
+class MyScaffold extends HookWidget {
+  @override
+  Widget build(BuildContext context) {
+    final controller = useProvider(sidebarItemProvider);
+    return Scaffold(
+        body: MyHomePage(),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () {
+            controller.toggle();
+          },
+        ));
+  }
 }
 
 class MyHomePage extends HookWidget {

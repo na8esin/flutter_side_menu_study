@@ -2,14 +2,19 @@ import 'dart:developer';
 import 'dart:math' show min;
 
 import 'package:flutter/material.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'study_custom_expansion_tile.dart';
 
 /// titleとchildrenを持ったwidget
 class SidebarTab {
-  SidebarTab({required this.key, required this.title, this.children});
+  SidebarTab(
+      {this.icon, required this.key, required this.title, this.children});
   final List<SidebarTab>? children;
   final Widget title;
+  // icon
+  final Icon? icon;
   final Key key;
 }
 
@@ -137,6 +142,18 @@ class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
   }
 }
 
+class SidebarItemController extends StateNotifier<bool> {
+  SidebarItemController(state) : super(state);
+
+  // trueで閉じる
+  toggle() {
+    state = !state;
+  }
+}
+
+final sidebarItemProvider =
+    StateNotifierProvider((ref) => SidebarItemController(true));
+
 /// 再帰的なwidget
 /// 子要素はヘッダをタップした時に作られる
 class SidebarItem extends StatelessWidget {
@@ -190,7 +207,7 @@ class SidebarItem extends StatelessWidget {
             _indicesMatch(_indices, activeTabIndices),
         contentPadding:
             EdgeInsets.only(left: 16.0 + 20.0 * (_indices.length - 1)),
-        title: root.title,
+        title: TitleWithIcon(root.title, Icon(Icons.note)),
         onTap: () {
           setActiveTabIndices(_indices);
           if (onTabChanged != null) onTabChanged(root.key);
@@ -219,8 +236,30 @@ class SidebarItem extends StatelessWidget {
         right: 12.0,
       ),
       selected: _indicesMatch(_indices, activeTabIndices),
-      title: root.title,
+      title: TitleWithIcon(root.title, Icon(Icons.note)),
       children: children,
+    );
+  }
+}
+
+class TitleWithIcon extends HookWidget {
+  TitleWithIcon(this.title, this.icon);
+  final Widget title;
+  final Icon icon;
+
+  @override
+  Widget build(BuildContext context) {
+    final isExpanded = useProvider(sidebarItemProvider.state);
+    return Row(
+      children: [
+        isExpanded
+            ? Padding(
+                padding: const EdgeInsets.only(right: 4.0),
+                child: icon,
+              )
+            : icon,
+        if (isExpanded) title,
+      ],
     );
   }
 }
