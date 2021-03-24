@@ -10,6 +10,9 @@ import 'dto.dart';
 
 class SidebarController extends StateNotifier<List<int>> {
   SidebarController(state) : super(state);
+
+  /// 一番上の階層だと[0]とか[1]
+  /// 二番目の階層だと[0, 0]とか[0, 1]
   void setActiveTabIndices(List<int> newIndices) {
     state = newIndices;
   }
@@ -18,6 +21,7 @@ class SidebarController extends StateNotifier<List<int>> {
   void init(List<SidebarTab> tabs) {
     if (state == null) {
       final newActiveTabData = _getFirstTabIndex(tabs, []);
+      // 例えば[0, 0]が返ってくる
       List<int> newActiveTabIndices = newActiveTabData.indices;
       //String tabId = newActiveTabData.tabId;
       if (newActiveTabIndices.length > 0) {
@@ -29,10 +33,9 @@ class SidebarController extends StateNotifier<List<int>> {
   /// こいつは初期化処理にしか使われてない
   /// メソッド名通り最初のタブしか処理されてない
   ///
-  /// tabId: 最初のタブのchildrenの最初のタブ
-  /// indices: 最初のタブが何階層あるか。
-  ///   2階層 [0]: 0, [1]: 0
-  ///   1階層 [0]: 0,
+  /// return:
+  ///   tabId: 最初のタブのchildrenの最初のタブ
+  ///   indices: 最初のタブが何階層か。
   FirstTabIndex _getFirstTabIndex(List<SidebarTab> tabs, List<int> indices) {
     Key? tabId;
     if (tabs.length > 0) {
@@ -66,21 +69,12 @@ class Sidebar extends HookWidget {
       this.key})
       : super(key: key);
   final Key? key;
-  // widgetのmapとかじゃないと
+  // 型が曖昧だったの作り替えた
   final List<SidebarTab> tabs;
   // 引数のstringはtabId. tabIdってなに？
   final void Function(Key) onTabChanged;
   final List<int>? activeTabIndices;
   static const double _maxSidebarWidth = 160;
-
-  // ここから下がstate
-  List<int>? activeTabIndices;
-
-  void initState() {
-    super.initState();
-
-    // ここが非同期だから一瞬初期化されない
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -187,6 +181,8 @@ class SidebarItem extends StatelessWidget {
     /// chapterB => [1]
     final _indices = indices ?? [index!];
     if (root.children == null)
+      // activeTabIndicesは全体で今誰が選択中なのかを記録してある
+      // _indicesは自分のindexになるはず。
       return ListTile(
         selected: activeTabIndices != null &&
             _indicesMatch(_indices, activeTabIndices),
@@ -208,6 +204,8 @@ class SidebarItem extends StatelessWidget {
     List<Widget> children = [];
     for (int i = 0; i < root.children!.length; i++) {
       final item = root.children![i];
+      // ここでの_indicesは親のindexになる
+      // chaA => [0], chaB => [1]
       final itemIndices = [..._indices, i];
       children.add(
         SidebarItem(
