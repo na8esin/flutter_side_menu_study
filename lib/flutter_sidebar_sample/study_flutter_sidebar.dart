@@ -6,67 +6,24 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'study_custom_expansion_tile.dart';
+import 'dto.dart';
 
-/// titleとchildrenを持ったwidget
-class SidebarTab {
-  SidebarTab(
-      {this.icon, required this.key, required this.title, this.children});
-  final List<SidebarTab>? children;
-  final Widget title;
-  // icon
-  final Icon? icon;
-  final Key key;
-}
+class SidebarController extends StateNotifier<List<int>> {
+  SidebarController(state) : super(state);
+  void setActiveTabIndices(List<int> newIndices) {
+    state = newIndices;
+  }
 
-class FirstTabIndex {
-  FirstTabIndex(this.indices, this.key);
-  final List<int> indices;
-  final Key? key;
-}
-
-/// SidebarがすべてのSidebarItemの頂点にいて制御している
-/// SidebarItemは再帰的に増えていく
-class Sidebar extends StatefulWidget {
-  Sidebar(
-      {required this.tabs,
-      required this.onTabChanged,
-      this.activeTabIndices,
-      this.key})
-      : super(key: key);
-  final Key? key;
-  // widgetのmapとかじゃないと
-  final List<SidebarTab> tabs;
-  // 引数のstringはtabId. tabIdってなに？
-  final void Function(Key) onTabChanged;
-  final List<int>? activeTabIndices;
-
-  @override
-  _SidebarState createState() => _SidebarState();
-}
-
-class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
-  static const double _maxSidebarWidth = 160;
-  double _sidebarWidth = _maxSidebarWidth;
-  List<int>? activeTabIndices;
-
-  void initState() {
-    super.initState();
-
-    // ここが非同期だから一瞬初期化されない
-    Future.delayed(Duration.zero, () {
-      if (activeTabIndices == null) {
-        final newActiveTabData = _getFirstTabIndex(widget.tabs, []);
-        List<int> newActiveTabIndices = newActiveTabData.indices;
-        //String tabId = newActiveTabData.tabId;
-        if (newActiveTabIndices.length > 0) {
-          // ここをコメントアウトすると初期で一番最初のタブが選択状態にならない
-          setActiveTabIndices(newActiveTabIndices);
-          // ここをコメントアウトにしてもonTabChangedはあとで登録されるっぽい
-          // 最初のtabのchildrenが無かったとしても呼び出し元のprintでtabIdは出る
-          //if (widget.onTabChanged != null) widget.onTabChanged(tabId);
-        }
+  // 最初のタブを見つけだしてアクティブにする
+  void init(List<SidebarTab> tabs) {
+    if (state == null) {
+      final newActiveTabData = _getFirstTabIndex(tabs, []);
+      List<int> newActiveTabIndices = newActiveTabData.indices;
+      //String tabId = newActiveTabData.tabId;
+      if (newActiveTabIndices.length > 0) {
+        setActiveTabIndices(newActiveTabIndices);
       }
-    });
+    }
   }
 
   /// こいつは初期化処理にしか使われてない
@@ -93,26 +50,46 @@ class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
     }
     return FirstTabIndex(indices, tabId);
   }
+}
 
-  void setActiveTabIndices(List<int> newIndices) {
-    setState(() {
-      activeTabIndices = newIndices;
-    });
-  }
+final sidebarControllerProvider = StateNotifierProvider((ref) {
+  SidebarController();
+});
 
-  /// didChangeDependencies and build are almost identical.
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final mediaQuery = MediaQuery.of(context);
-    _sidebarWidth = min(mediaQuery.size.width * 0.7, _maxSidebarWidth);
+/// SidebarがすべてのSidebarItemの頂点にいて制御している
+/// SidebarItemは再帰的に増えていく
+class Sidebar extends HookWidget {
+  Sidebar(
+      {required this.tabs,
+      required this.onTabChanged, // exampleでセットされる
+      this.activeTabIndices,
+      this.key})
+      : super(key: key);
+  final Key? key;
+  // widgetのmapとかじゃないと
+  final List<SidebarTab> tabs;
+  // 引数のstringはtabId. tabIdってなに？
+  final void Function(Key) onTabChanged;
+  final List<int>? activeTabIndices;
+  static const double _maxSidebarWidth = 160;
+
+  // ここから下がstate
+  List<int>? activeTabIndices;
+
+  void initState() {
+    super.initState();
+
+    // ここが非同期だから一瞬初期化されない
   }
 
   @override
   Widget build(BuildContext context) {
+    final _sidebarWidth = useState(_maxSidebarWidth);
+    final mediaQuery = MediaQuery.of(context);
+    _sidebarWidth.value = min(mediaQuery.size.width * 0.7, _maxSidebarWidth);
     return Container(
       color: Theme.of(context).canvasColor,
-      width: _sidebarWidth,
+      width: _sidebarWidth.value,
       child: Column(
         children: [
           // header部分。必要？
@@ -126,14 +103,15 @@ class _SidebarState extends State<Sidebar> with SingleTickerProviderStateMixin {
               // 二階層以降はSidebarItemの再帰処理で作るから
               child: ListView.builder(
                 itemBuilder: (BuildContext context, int index) => SidebarItem(
-                  data: widget.tabs[index],
-                  onTabChanged: widget.onTabChanged,
+                  data: tabs[index],
+                  onTabChanged: onTabChanged,
                   activeTabIndices: activeTabIndices,
                   setActiveTabIndices: setActiveTabIndices,
+                  // builderが作り出すただの連番
                   index: index,
                 ),
                 // 第一階層のListのlength
-                itemCount: widget.tabs.length,
+                itemCount: tabs.length,
               ),
             ),
           ),
@@ -159,6 +137,8 @@ final sidebarItemProvider =
 /// 子要素はヘッダをタップした時に作られる
 class SidebarItem extends StatelessWidget {
   final SidebarTab data;
+
+  /// 押した時に右の画面を変化させるみたいな使い方
   final void Function(Key) onTabChanged;
   final List<int>? activeTabIndices;
   final void Function(List<int> newIndices) setActiveTabIndices;
@@ -201,6 +181,10 @@ class SidebarItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final root = data;
+
+    /// 一番上の要素にはindicesがなくてindexがただ連番で入る
+    /// chapterA => [0]
+    /// chapterB => [1]
     final _indices = indices ?? [index!];
     if (root.children == null)
       return ListTile(
@@ -210,7 +194,12 @@ class SidebarItem extends StatelessWidget {
             EdgeInsets.only(left: 16.0 + 20.0 * (_indices.length - 1)),
         title: TitleWithIcon(root.title, Icon(Icons.note)),
         onTap: () {
+          // Sidebarから受け継がれてきてるんだよな。
+          // 単純に考えると押したやつはselectedになってそれ以外はならないってこと
+          // 例えば_indicesが[0]
           setActiveTabIndices(_indices);
+
+          // 右のメイン画面とかを変化させる
           if (onTabChanged != null) onTabChanged(root.key);
         },
       );

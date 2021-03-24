@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import 'study_flutter_sidebar.dart';
+import 'package:flutter_sidebar/flutter_sidebar.dart';
 
 void main() {
   runApp(MyApp());
@@ -177,10 +177,13 @@ class _MyHomePageState extends State<MyHomePage>
   @override
   Widget build(BuildContext context) {
     const _textStyle = TextStyle(fontSize: 26);
+
+    /// ✨✨✨
     final sidebar = Sidebar.fromJson(
       key: _sidebarKey,
       tabs: tabData,
       onTabChanged: setTab,
+      activeTabIndices: [0, 0, 1],
     );
     final mainContent = Center(
       child: tab != null
