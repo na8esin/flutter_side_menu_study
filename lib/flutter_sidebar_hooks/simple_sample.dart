@@ -28,7 +28,7 @@ class LeftMenuSelectedController extends StateNotifier<String> {
 }
 
 final leftMenuSelectedProvider =
-    StateNotifierProvider((ref) => LeftMenuSelectedController(''));
+    StateNotifierProvider((ref) => LeftMenuSelectedController('Chap_B'));
 
 class MyHomePage extends HookWidget {
   @override
@@ -67,7 +67,9 @@ class MyHomePage extends HookWidget {
               ],
             ),
           ],
-          activeTabIndices: [1],
+
+          /// childがあるときは[1]のような一階層の指定はだめ
+          activeTabIndices: [1, 1],
           // ListTileのonTapにそのまま渡される
           // 関数渡しにすると上手くいくが、ここで波括弧を展開して、
           // 中でcontrollerを処理しようとすると、
@@ -88,6 +90,9 @@ class MyHomePage extends HookWidget {
 class MyMainWidget extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    return Container();
+    final key = useProvider(leftMenuSelectedProvider.state);
+    return Container(
+      child: Text(key),
+    );
   }
 }
