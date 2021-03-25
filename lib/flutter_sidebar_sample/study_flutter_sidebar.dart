@@ -151,6 +151,12 @@ class SidebarItemController extends StateNotifier<bool> {
 final sidebarItemProvider =
     StateNotifierProvider((ref) => SidebarItemController(true));
 
+final isSelectedProvider = StateProvider<bool>((ref) {
+  ref.watch(sidebarControllerProvider);
+
+  return false;
+});
+
 /// 再帰的なwidget
 /// 子要素はヘッダをタップした時に作られる
 class SidebarItem extends HookWidget {
@@ -164,7 +170,7 @@ class SidebarItem extends HookWidget {
   final int? index;
   final List<int>? indices;
 
-  const SidebarItem({
+  SidebarItem({
     required this.data,
     required this.controller,
     required this.onTabChanged,
@@ -186,10 +192,12 @@ class SidebarItem extends HookWidget {
     /// chapterA => [0]
     /// chapterB => [1]
     final _indices = indices ?? [index!];
+    final isSelected = useState(false);
+    isSelected.value = controller.isSelected(_indices);
     if (root.children == null)
       // _indicesは自分のindexになるはず。
       return ListTile(
-        selected: controller.isSelected(_indices),
+        selected: isSelected.value,
         contentPadding:
             EdgeInsets.only(left: 16.0 + 20.0 * (_indices.length - 1)),
         title: TitleWithIcon(root.title, Icon(Icons.note)),
