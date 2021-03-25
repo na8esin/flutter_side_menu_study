@@ -19,12 +19,21 @@ class MyScaffold extends HookWidget {
   }
 }
 
-final leftMenuSelectedProvider = StateProvider((ref) => ValueKey('Chap A'));
+class LeftMenuSelectedController extends StateNotifier<String> {
+  LeftMenuSelectedController(state) : super(state);
+
+  setKey(Key tabId) {
+    if (tabId is ValueKey<String>) state = tabId.value;
+  }
+}
+
+final leftMenuSelectedProvider =
+    StateNotifierProvider((ref) => LeftMenuSelectedController(''));
 
 class MyHomePage extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    final controller = useProvider(leftMenuSelectedProvider);
+    final _controller = useProvider(leftMenuSelectedProvider);
 
     // 一つしか無い場合は常に選択状態。そりゃそうか。
     // sidebarTabにPathを入れられるようにすれば便利？
@@ -60,9 +69,10 @@ class MyHomePage extends HookWidget {
           ],
           activeTabIndices: [1],
           // ListTileのonTapにそのまま渡される
-          onTabChanged: (Key tabId) {
-            //if (tabId is ValueKey<String>) controller.state = tabId;
-          },
+          // 関数渡しにすると上手くいくが、ここで波括弧を展開して、
+          // 中でcontrollerを処理しようとすると、
+          // widgetの内部のstateまで干渉する感じ
+          onTabChanged: _controller.setKey,
         ),
         VerticalDivider(thickness: 1, width: 1),
         Expanded(

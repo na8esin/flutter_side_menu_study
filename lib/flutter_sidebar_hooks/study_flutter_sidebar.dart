@@ -18,6 +18,7 @@ class SidebarController extends StateNotifier<SidebarParameter> {
   /// 一番上の階層だと[0]とか[1]
   /// 二番目の階層だと[0, 0]とか[0, 1]
   void setActiveTabIndices(List<int> newIndices) {
+    print(newIndices);
     state = state.copyWith(activeTabIndices: newIndices);
   }
 
@@ -180,7 +181,7 @@ class SidebarItem extends HookWidget {
   final int? index;
   final List<int>? indices;
 
-  SidebarItem({
+  const SidebarItem({
     required this.data,
     required this.controller,
     required this.onTabChanged,
@@ -215,7 +216,7 @@ class SidebarItem extends HookWidget {
         title: TitleWithIcon(root.title, Icon(Icons.note)),
         onTap: () {
           controller.setActiveTabIndices(_indices);
-
+          print(root.key);
           // 右のメイン画面とかを変化させる
           if (onTabChanged != null) onTabChanged(root.key);
         },
