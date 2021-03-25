@@ -13,48 +13,71 @@ void main() {
 class MyScaffold extends HookWidget {
   @override
   Widget build(BuildContext context) {
-    final controller = useProvider(sidebarItemProvider);
     return Scaffold(
-        body: MyHomePage(),
-        floatingActionButton: FloatingActionButton(
-          onPressed: () {
-            controller.toggle();
-          },
-        ));
+      body: MyHomePage(),
+    );
   }
 }
+
+final leftMenuSelectedProvider = StateProvider((ref) => ValueKey('Chap A'));
 
 class MyHomePage extends HookWidget {
   @override
   Widget build(BuildContext context) {
+    final controller = useProvider(leftMenuSelectedProvider);
+
     // 一つしか無い場合は常に選択状態。そりゃそうか。
     // sidebarTabにPathを入れられるようにすれば便利？
-    // ブラウザバックとうまく連動できるかな？
-    return Sidebar(
-      tabs: [
-        // objectKeyとかの方がいいかも？
-        SidebarTab(
-            key: ValueKey('Chap A'),
-            title: Text(
-              'Chapter A',
-              // なぜか効かない
-              overflow: TextOverflow.ellipsis,
-            )),
-        SidebarTab(
-          key: ValueKey('Chap B'),
-          title: Text('Chap B'),
-          children: [
-            SidebarTab(key: ValueKey('Chap B1'), title: Text('Chap B1')),
-            SidebarTab(key: ValueKey('Chap B2'), title: Text('Chap B2')),
+    // ブラウザバックとうまく連動できるか？
+    return Row(
+      children: [
+        Sidebar(
+          tabs: [
+            // objectKeyとかの方がいいかも？
+            SidebarTab(
+                key: ValueKey('Chap_A'),
+                title: Text(
+                  'Chapter A',
+                  // なぜか効かない
+                  overflow: TextOverflow.ellipsis,
+                ),
+                icon: Icon(Icons.note)),
+            SidebarTab(
+              key: ValueKey('Chap_B'),
+              title: Text('Chap B'),
+              icon: Icon(Icons.note),
+              children: [
+                SidebarTab(
+                    key: ValueKey('Chap_B1'),
+                    title: Text('Chap B1'),
+                    icon: Icon(Icons.note)),
+                SidebarTab(
+                    key: ValueKey('Chap_B2'),
+                    title: Text('Chap B2'),
+                    icon: Icon(Icons.note)),
+              ],
+            ),
           ],
+          activeTabIndices: [1],
+          // ListTileのonTapにそのまま渡される
+          onTabChanged: (Key tabId) {
+            //if (tabId is ValueKey<String>) controller.state = tabId;
+          },
         ),
+        VerticalDivider(thickness: 1, width: 1),
+        Expanded(
+          child: Center(
+            child: MyMainWidget(),
+          ),
+        )
       ],
-      activeTabIndices: [1],
-      // ListTileのonTapにそのまま渡される
-      onTabChanged: (Key tabId) {
-        // 右の画面を変えたりする
-        // StateNotifierとかで
-      },
     );
+  }
+}
+
+class MyMainWidget extends HookWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Container();
   }
 }

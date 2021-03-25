@@ -104,6 +104,8 @@ class Sidebar extends HookWidget {
   Widget build(BuildContext context) {
     final controller = useProvider(sidebarControllerProvider(
         SidebarParameter(activeTabIndices: activeTabIndices, tabs: tabs)));
+    final itemController = useProvider(sidebarItemProvider);
+
     final _sidebarWidth = useState(_maxSidebarWidth);
     final mediaQuery = MediaQuery.of(context);
     _sidebarWidth.value = min(mediaQuery.size.width * 0.7, _maxSidebarWidth);
@@ -112,10 +114,19 @@ class Sidebar extends HookWidget {
       width: _sidebarWidth.value,
       child: Column(
         children: [
-          // header部分。必要？
+          // header部分
           SizedBox(
             height: 50,
-            child: Container(color: Theme.of(context).primaryColor),
+            child: Container(
+              color: Theme.of(context).primaryColor,
+              // 閉会ボタン
+              child: InkWell(
+                child: Icon(Icons.arrow_right),
+                onTap: () {
+                  itemController.toggle();
+                },
+              ),
+            ),
           ),
           Expanded(
             child: Material(
