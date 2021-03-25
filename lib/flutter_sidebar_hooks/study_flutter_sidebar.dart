@@ -8,6 +8,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'study_custom_expansion_tile.dart';
 import 'sidebar_parameter.dart';
 import 'dto.dart';
+import '../rotating_translation_arrow.dart';
 
 class SidebarController extends StateNotifier<SidebarParameter> {
   // ここでのstateはactiveTab
@@ -108,8 +109,8 @@ class Sidebar extends HookWidget {
     final itemController = useProvider(sidebarItemProvider);
     final animationController = useAnimationController(
         duration: const Duration(milliseconds: 250), initialValue: 1.0);
-
     final x = animationController.value;
+    useListenable(animationController);
 
     final _sidebarWidth = useState(_maxSidebarWidth);
     final mediaQuery = MediaQuery.of(context);
@@ -127,11 +128,9 @@ class Sidebar extends HookWidget {
             child: Container(
               color: Theme.of(context).primaryColor,
               // 閉会ボタン
-              child: InkWell(
-                child: Icon(Icons.arrow_right),
-                onTap: () {
-                  itemController.toggle();
-                },
+              child: RotatingTranslationArrow(
+                controller: animationController,
+                onTapAdditional: itemController.toggle,
               ),
             ),
           ),
@@ -161,7 +160,7 @@ class Sidebar extends HookWidget {
 class SidebarItemController extends StateNotifier<bool> {
   SidebarItemController(state) : super(state);
   // trueで閉じる
-  toggle() {
+  void toggle() {
     state = !state;
   }
 }

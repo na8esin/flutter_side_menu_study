@@ -4,9 +4,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 class RotatingTranslationArrow extends StatelessWidget {
-  const RotatingTranslationArrow({Key? key, required this.controller})
+  const RotatingTranslationArrow(
+      {Key? key, required this.controller, this.onTapAdditional})
       : super(key: key);
   final AnimationController controller;
+  final void Function()? onTapAdditional;
 
   @override
   Widget build(BuildContext context) {
@@ -25,6 +27,7 @@ class RotatingTranslationArrow extends StatelessWidget {
         } else if (controller.isCompleted) {
           controller.reverse();
         }
+        if (onTapAdditional != null) onTapAdditional!();
       },
       child: Align(
         alignment: Alignment.topLeft,

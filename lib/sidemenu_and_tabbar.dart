@@ -42,7 +42,6 @@ class MyHomePage extends HookWidget {
     final selectIndex = useState(0);
     final controller = useAnimationController(
         duration: const Duration(milliseconds: 250), initialValue: 1.0);
-
     final x = controller.value;
     useListenable(controller);
     return Row(
