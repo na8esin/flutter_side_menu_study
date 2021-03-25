@@ -6,21 +6,25 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'study_custom_expansion_tile.dart';
+import 'sidebar_parameter.dart';
 import 'dto.dart';
 
-class SidebarController extends StateNotifier<List<int>> {
-  SidebarController(state) : super(state);
+class SidebarController extends StateNotifier<SidebarParameter> {
+  // ここでのstateはactiveTab
+  SidebarController(SidebarParameter state) : super(state) {
+    init();
+  }
 
   /// 一番上の階層だと[0]とか[1]
   /// 二番目の階層だと[0, 0]とか[0, 1]
   void setActiveTabIndices(List<int> newIndices) {
-    state = newIndices;
+    state = state.copyWith(activeTabIndices: newIndices);
   }
 
   // 最初のタブを見つけだしてアクティブにする
-  void init(List<SidebarTab> tabs) {
-    if (state == null) {
-      final newActiveTabData = _getFirstTabIndex(tabs, []);
+  void init() {
+    if (state.activeTabIndices == null) {
+      final newActiveTabData = _getFirstTabIndex(state.tabs, []);
       // 例えば[0, 0]が返ってくる
       List<int> newActiveTabIndices = newActiveTabData.indices;
       //String tabId = newActiveTabData.tabId;
@@ -53,10 +57,30 @@ class SidebarController extends StateNotifier<List<int>> {
     }
     return FirstTabIndex(indices, tabId);
   }
+
+  /// _indicesMatchはListTileとCustomExpansionTileのselectedを決めるための関数
+  /// _indices, activeTabIndices
+  /// a[i] とb[i]が一つでも合わなければfalse。
+  /// 全部合えばtrue
+  /// ただし、はみ出した分は、比較対象にならない
+  ///
+  /// aとbのlengthが合わないのはどんな場合？
+  ///
+  /// 一回しまって、また開いたとしても選択中のものは選択中になる。
+  /// インデックスだけを別でstateで持ってるから？
+  bool isSelected(List<int> a) {
+    final b = state.activeTabIndices;
+    if (b == null) return false;
+    for (int i = 0; i < min(a.length, b.length); i++) {
+      if (a[i] != b[i]) return false;
+    }
+    return true;
+  }
 }
 
-final sidebarControllerProvider = StateNotifierProvider((ref) {
-  SidebarController();
+final sidebarControllerProvider = StateNotifierProvider.family
+    .autoDispose((ref, SidebarParameter paramerter) {
+  return SidebarController(paramerter);
 });
 
 /// SidebarがすべてのSidebarItemの頂点にいて制御している
@@ -78,6 +102,8 @@ class Sidebar extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    final controller = useProvider(sidebarControllerProvider(
+        SidebarParameter(activeTabIndices: activeTabIndices, tabs: tabs)));
     final _sidebarWidth = useState(_maxSidebarWidth);
     final mediaQuery = MediaQuery.of(context);
     _sidebarWidth.value = min(mediaQuery.size.width * 0.7, _maxSidebarWidth);
@@ -98,9 +124,8 @@ class Sidebar extends HookWidget {
               child: ListView.builder(
                 itemBuilder: (BuildContext context, int index) => SidebarItem(
                   data: tabs[index],
+                  controller: controller,
                   onTabChanged: onTabChanged,
-                  activeTabIndices: activeTabIndices,
-                  setActiveTabIndices: setActiveTabIndices,
                   // builderが作り出すただの連番
                   index: index,
                 ),
@@ -117,7 +142,6 @@ class Sidebar extends HookWidget {
 
 class SidebarItemController extends StateNotifier<bool> {
   SidebarItemController(state) : super(state);
-
   // trueで閉じる
   toggle() {
     state = !state;
@@ -129,21 +153,21 @@ final sidebarItemProvider =
 
 /// 再帰的なwidget
 /// 子要素はヘッダをタップした時に作られる
-class SidebarItem extends StatelessWidget {
+class SidebarItem extends HookWidget {
   final SidebarTab data;
+
+  /// 主にタブの選択状態の管理
+  final SidebarController controller;
 
   /// 押した時に右の画面を変化させるみたいな使い方
   final void Function(Key) onTabChanged;
-  final List<int>? activeTabIndices;
-  final void Function(List<int> newIndices) setActiveTabIndices;
   final int? index;
   final List<int>? indices;
 
   const SidebarItem({
     required this.data,
+    required this.controller,
     required this.onTabChanged,
-    required this.activeTabIndices,
-    required this.setActiveTabIndices,
     this.index,
     this.indices,
   }) : assert(
@@ -151,24 +175,6 @@ class SidebarItem extends StatelessWidget {
               (index != null && indices == null),
           'Exactly one parameter out of [index, indices] has to be provided',
         );
-
-  /// _indicesMatchはListTileとCustomExpansionTileのselectedを決めるための関数
-  /// _indices, activeTabIndices
-  /// a[i] とb[i]が一つでも合わなければfalse。
-  /// 全部合えばtrue
-  /// ただし、はみ出した分は、比較対象にならない
-  ///
-  /// aとbのlengthが合わないのはどんな場合？
-  ///
-  /// 一回しまって、また開いたとしても選択中のものは選択中になる。
-  /// インデックスだけを別でstateで持ってるから？
-  bool _indicesMatch(List<int> a, List<int>? b) {
-    if (b == null) return false;
-    for (int i = 0; i < min(a.length, b.length); i++) {
-      if (a[i] != b[i]) return false;
-    }
-    return true;
-  }
 
   /// buildメソッドとの違いは無い
   /// rootはthis.data
@@ -181,19 +187,14 @@ class SidebarItem extends StatelessWidget {
     /// chapterB => [1]
     final _indices = indices ?? [index!];
     if (root.children == null)
-      // activeTabIndicesは全体で今誰が選択中なのかを記録してある
       // _indicesは自分のindexになるはず。
       return ListTile(
-        selected: activeTabIndices != null &&
-            _indicesMatch(_indices, activeTabIndices),
+        selected: controller.isSelected(_indices),
         contentPadding:
             EdgeInsets.only(left: 16.0 + 20.0 * (_indices.length - 1)),
         title: TitleWithIcon(root.title, Icon(Icons.note)),
         onTap: () {
-          // Sidebarから受け継がれてきてるんだよな。
-          // 単純に考えると押したやつはselectedになってそれ以外はならないってこと
-          // 例えば_indicesが[0]
-          setActiveTabIndices(_indices);
+          controller.setActiveTabIndices(_indices);
 
           // 右のメイン画面とかを変化させる
           if (onTabChanged != null) onTabChanged(root.key);
@@ -210,9 +211,8 @@ class SidebarItem extends StatelessWidget {
       children.add(
         SidebarItem(
           data: item,
+          controller: controller,
           onTabChanged: onTabChanged,
-          activeTabIndices: activeTabIndices,
-          setActiveTabIndices: setActiveTabIndices,
           indices: itemIndices,
         ),
       );
@@ -223,7 +223,7 @@ class SidebarItem extends StatelessWidget {
         left: 16.0 + 20.0 * (_indices.length - 1),
         right: 12.0,
       ),
-      selected: _indicesMatch(_indices, activeTabIndices),
+      selected: controller.isSelected(_indices),
       title: TitleWithIcon(root.title, Icon(Icons.note)),
       children: children,
     );

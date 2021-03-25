@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'study_flutter_sidebar.dart';
+import 'dto.dart';
 
 void main() {
   runApp(ProviderScope(child: MaterialApp(home: MyScaffold())));
@@ -51,7 +52,7 @@ class MyHomePage extends HookWidget {
       // [0]で指定すると例外が発生しなくなるけどそれなら必須じゃね？
       // activeTabIndicesを外から与える意味って？
       // [0]を[1]に変えたところで初期で'Chapter B'が選択されてたりはしない
-      activeTabIndices: [0],
+      activeTabIndices: [1],
       // ListTileのonTapにそのまま渡される
       onTabChanged: (Key tabId) {
         // 右の画面を変えたりする
