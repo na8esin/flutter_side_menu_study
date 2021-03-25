@@ -33,6 +33,8 @@ class MyHomePage extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final controller = useProvider(dtoProvider);
+    // stateを関するためだけのやつ。正しい使い方なのだろうか？
+    // controller.isSelected()が機能するようになる
     useProvider(dtoProvider.state);
     final data = [Dto('title A'), Dto('title B')];
     return ListView.builder(

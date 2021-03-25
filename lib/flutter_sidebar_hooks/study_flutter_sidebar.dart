@@ -102,16 +102,23 @@ class Sidebar extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    const _iconSizeWithPadding = 48.0;
     final controller = useProvider(sidebarControllerProvider(
         SidebarParameter(activeTabIndices: activeTabIndices, tabs: tabs)));
     final itemController = useProvider(sidebarItemProvider);
+    final animationController = useAnimationController(
+        duration: const Duration(milliseconds: 250), initialValue: 1.0);
+
+    final x = animationController.value;
 
     final _sidebarWidth = useState(_maxSidebarWidth);
     final mediaQuery = MediaQuery.of(context);
     _sidebarWidth.value = min(mediaQuery.size.width * 0.7, _maxSidebarWidth);
-    return Container(
-      color: Theme.of(context).canvasColor,
-      width: _sidebarWidth.value,
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+          minWidth: _iconSizeWithPadding,
+          // 初期が_iconSizeWithPaddingで最後は160になる
+          maxWidth: (x + 1) * _iconSizeWithPadding + x * 64),
       child: Column(
         children: [
           // header部分
