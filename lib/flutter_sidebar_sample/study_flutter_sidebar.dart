@@ -151,10 +151,9 @@ class SidebarItemController extends StateNotifier<bool> {
 final sidebarItemProvider =
     StateNotifierProvider((ref) => SidebarItemController(true));
 
-final isSelectedProvider = StateProvider<bool>((ref) {
-  ref.watch(sidebarControllerProvider);
-
-  return false;
+final isSelectedProvider =
+    StateNotifierProvider.family((ref, SidebarController controller) {
+  return controller;
 });
 
 /// 再帰的なwidget
@@ -192,12 +191,13 @@ class SidebarItem extends HookWidget {
     /// chapterA => [0]
     /// chapterB => [1]
     final _indices = indices ?? [index!];
-    final isSelected = useState(false);
-    isSelected.value = controller.isSelected(_indices);
+
+    useProvider(isSelectedProvider(controller).state);
+
     if (root.children == null)
       // _indicesは自分のindexになるはず。
       return ListTile(
-        selected: isSelected.value,
+        selected: controller.isSelected(_indices),
         contentPadding:
             EdgeInsets.only(left: 16.0 + 20.0 * (_indices.length - 1)),
         title: TitleWithIcon(root.title, Icon(Icons.note)),

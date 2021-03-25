@@ -57,7 +57,6 @@ class MyHomePage extends HookWidget {
       onTabChanged: (Key tabId) {
         // 右の画面を変えたりする
         // StateNotifierとかで
-        print(tabId);
       },
     );
   }
