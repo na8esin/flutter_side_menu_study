@@ -192,6 +192,7 @@ class SidebarItem extends HookWidget {
     /// chapterB => [1]
     final _indices = indices ?? [index!];
 
+    // stateの監視のためだけに必要
     useProvider(isSelectedProvider(controller).state);
 
     if (root.children == null)

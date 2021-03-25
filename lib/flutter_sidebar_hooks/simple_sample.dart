@@ -49,9 +49,6 @@ class MyHomePage extends HookWidget {
           ],
         ),
       ],
-      // [0]で指定すると例外が発生しなくなるけどそれなら必須じゃね？
-      // activeTabIndicesを外から与える意味って？
-      // [0]を[1]に変えたところで初期で'Chapter B'が選択されてたりはしない
       activeTabIndices: [1],
       // ListTileのonTapにそのまま渡される
       onTabChanged: (Key tabId) {
