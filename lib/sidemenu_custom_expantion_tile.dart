@@ -62,9 +62,6 @@ class MyHomePage extends HookWidget {
                 SizedBox(
                   height: 20,
                 ),
-                // ExpansionTileはontapもselectedもない
-                // プルダウンを開くと問答無用で選択状態になるから
-                // 他のtileとの整合性を保つにはカスタマイズしかない
                 CustomExpansionTile(
                   trailing: controller.isCompleted ? null : SizedBox.shrink(),
                   expandedAlignment: Alignment.centerRight,

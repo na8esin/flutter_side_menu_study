@@ -4,6 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../rotating_translation_arrow.dart';
+import '../flutter_sidebar_hooks/study_custom_expansion_tile.dart';
 
 void main() {
   runApp(ProviderScope(
@@ -53,7 +54,36 @@ class MyHomePage extends HookWidget {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [Icon(Icons.android), Text('アンドロイド')],
                       )
-                    : Icon(Icons.android)
+                    : Icon(Icons.android),
+                // 初期表示でoverflowする
+                CustomExpansionTile(
+                  title: controller.isCompleted
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [Icon(Icons.hail), Text('hailなicon')],
+                        )
+                      : Icon(Icons.hail),
+                  trailing: SizedBox.shrink(), // を加えるとoverflowしない
+                ),
+                // 対照実験。こいつもoverflowする
+                ExpansionTile(
+                  title: controller.isCompleted
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [Icon(Icons.hail), Text('hailなicon')],
+                        )
+                      : Icon(Icons.hail),
+                  trailing: SizedBox.shrink(),
+                ),
+                // 対照実験。こいつは大丈夫
+                ListTile(
+                  title: controller.isCompleted
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [Icon(Icons.hail), Text('hailなicon')],
+                        )
+                      : Icon(Icons.hail),
+                )
               ],
             ),
           ),

@@ -45,6 +45,7 @@ class MyHomePage extends HookWidget {
             // objectKeyとかの方がいいかも？
             SidebarTab(
               key: ValueKey('Chap_A'),
+              // Stringでもいいかもしれない
               title: Text(
                 'Chapter A',
                 // なぜか効かない
