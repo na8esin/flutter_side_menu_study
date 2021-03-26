@@ -105,7 +105,6 @@ class Sidebar extends HookWidget {
     const _iconSizeWithPadding = 48.0;
     final controller = useProvider(sidebarControllerProvider(
         SidebarParameter(activeTabIndices: activeTabIndices, tabs: tabs)));
-    final itemController = useProvider(sidebarItemProvider);
     final animationController = useAnimationController(
         duration: const Duration(milliseconds: 250), initialValue: 1.0);
     final x = animationController.value;
@@ -126,7 +125,6 @@ class Sidebar extends HookWidget {
               // 閉会ボタン
               child: RotatingTranslationArrow(
                 controller: animationController,
-                onTapAdditional: itemController.toggle,
               ),
             ),
           ),
@@ -149,17 +147,6 @@ class Sidebar extends HookWidget {
     );
   }
 }
-
-class SidebarItemController extends StateNotifier<bool> {
-  SidebarItemController(state) : super(state);
-  // trueで閉じる
-  void toggle() {
-    state = !state;
-  }
-}
-
-final sidebarItemProvider =
-    StateNotifierProvider((ref) => SidebarItemController(true));
 
 final isSelectedProvider =
     StateNotifierProvider.family((ref, SidebarController controller) {
@@ -215,7 +202,7 @@ class SidebarItem extends HookWidget {
         contentPadding: animationController.isDismissed
             ? EdgeInsets.zero
             : EdgeInsets.only(left: 4.0 + 8.0 * (_indices.length - 1)),
-        title: TitleWithIcon(root.title, root.iconData),
+        title: TitleWithIcon(root.title, root.iconData, animationController),
         onTap: () {
           controller.setActiveTabIndices(_indices);
           // 右のメイン画面とかを変化させる
@@ -249,10 +236,7 @@ class SidebarItem extends HookWidget {
               right: 4.0,
             ),
       selected: controller.isSelected(_indices),
-      title: TitleWithIcon(
-        root.title,
-        root.iconData,
-      ),
+      title: TitleWithIcon(root.title, root.iconData, animationController),
       trailing: SizedBox.shrink(),
       children: children,
     );
@@ -260,15 +244,14 @@ class SidebarItem extends HookWidget {
 }
 
 class TitleWithIcon extends HookWidget {
-  TitleWithIcon(this.title, this.iconData);
+  TitleWithIcon(this.title, this.iconData, this.controller);
   final Widget title;
   final IconData iconData;
+  final AnimationController controller;
 
   @override
   Widget build(BuildContext context) {
-    // 左メニュー全体が開いてるかどうか
-    final isExpanded = useProvider(sidebarItemProvider.state);
-    return isExpanded
+    return controller.isCompleted
         ? Row(
             mainAxisSize: MainAxisSize.min,
             children: [
