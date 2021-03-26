@@ -6,21 +6,6 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'rotating_translation_arrow.dart';
 import 'flutter_sidebar_hooks/study_custom_expansion_tile.dart';
 
-/// 目標 : firebaseのコンソールみたいな
-/// ExpansionTileの足りない要素
-/// 　開いただけで（子要素を選択しなくても）選択状態になる
-/// 足りない要素
-///   選択されてるメニューのアイコンを反転させる
-/// 　　icon, selectedIcon
-/// 　左メニュの選択状態って同期する？
-///
-/// 足りない要素を補うためには？
-///   パッケージを探す
-///     https://pub.dev/packages/flutter_sidebar
-///     https://github.com/tusharsadhwani/scaffold_responsive
-///       完全に消えるのはいまいち。アイコンだけの状態が欲しい
-///     https://pub.dev/packages/responsive_scaffold
-
 void main() {
   runApp(ProviderScope(
       child:

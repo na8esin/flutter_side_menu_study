@@ -4,7 +4,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 /// 横移動したい幅を決めたときにOffsetをいくつに設定すればいいかを調べる
-/// paddingも考慮
 void main() {
   runApp(ProviderScope(
       child: MaterialApp(
@@ -17,25 +16,24 @@ class MyHomePage extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final _controller = useAnimationController(
-      duration: const Duration(milliseconds: 500),
+      duration: const Duration(milliseconds: 250),
     );
-    // https://api.flutter.dev/flutter/animation/Tween-class.html#animation.Tween.1
     final _animation = _controller.drive(
       // Offsetの指定が楽になる
       Tween<Offset>(
         begin: const Offset(0.0, 0.0),
-        end: const Offset(2.5, 0.0), // この値だとピッタリ収まる -> 実は嘘
+        end: const Offset(2, 0.0),
       ),
     );
     useListenable(_controller);
     return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
       FractionalTranslation(
           translation: _animation.value,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0), // paddingすると計算が複雑になる
-            child: InkWell(
-              // InkWellがあるとマウスを載せたときにサイズがわかる
-              onTap: () {},
+          child: InkWell(
+            // InkWellがあるとマウスを載せたときにサイズがわかる
+            onTap: () {},
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
               child: Icon(
                 Icons.arrow_right,
                 size: 32,
@@ -43,7 +41,8 @@ class MyHomePage extends HookWidget {
             ),
           )),
       Container(
-        width: 32 * 5, // 160
+//        width: (32 + 16) * 2, // = 96
+        width: (32 + 16) * 3, // = 144
         height: 32,
         color: Colors.blueGrey,
       ),

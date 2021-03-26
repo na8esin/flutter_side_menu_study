@@ -21,6 +21,13 @@ class MyScaffold extends HookWidget {
   }
 }
 
+/// flutter_sidebar_hooksにrotating_translation_arrowを
+/// 組み込んでる最中に何かがoverflowするので実験
+/// Row, CustomExpansionTile, ExpansionTile
+/// の対照実験。
+/// ConstrainedBoxの横幅をちゃんと計算して、
+/// ちょっと広くなると解消されたからひとまず解決
+///
 class MyHomePage extends HookWidget {
   @override
   Widget build(BuildContext context) {
@@ -35,9 +42,8 @@ class MyHomePage extends HookWidget {
         ConstrainedBox(
           constraints: BoxConstraints(
               minWidth: _iconSizeWithPadding,
-              // 初期が_iconSizeWithPaddingで最後は160になる
-              // ここの計算式もちゃんと出さないとなぁ
-              maxWidth: (x + 1) * _iconSizeWithPadding + x * 64),
+              // ちゃんと計算するとoverflowしなくなったのでとりあえずいいや
+              maxWidth: (2.5 * x + 1) * _iconSizeWithPadding),
           child: Align(
             alignment: Alignment.topCenter,
             child: ListView(
@@ -57,16 +63,25 @@ class MyHomePage extends HookWidget {
                     : Icon(Icons.android),
                 // 初期表示でoverflowする
                 CustomExpansionTile(
+                  expandedAlignment: Alignment.centerRight,
                   title: controller.isCompleted
                       ? Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.end,
                           children: [Icon(Icons.hail), Text('hailなicon')],
                         )
                       : Icon(Icons.hail),
-                  trailing: SizedBox.shrink(), // を加えるとoverflowしない
+                  children: [
+                    ListTile(
+                      title: Align(
+                          alignment: Alignment.centerRight,
+                          child: Text('hello')),
+                    )
+                  ],
+                  //trailing: SizedBox.shrink(),
                 ),
                 // 対照実験。こいつもoverflowする
                 ExpansionTile(
+                  expandedAlignment: Alignment.centerRight,
                   title: controller.isCompleted
                       ? Row(
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -74,6 +89,11 @@ class MyHomePage extends HookWidget {
                         )
                       : Icon(Icons.hail),
                   trailing: SizedBox.shrink(),
+                  children: [
+                    ListTile(
+                      title: Text('hello'),
+                    )
+                  ],
                 ),
                 // じゃあtrailingじゃなくて、titleにくっつける
                 ExpansionTile(
