@@ -67,7 +67,15 @@ class MyHomePage extends HookWidget {
                   title: controller.isCompleted
                       ? Row(
                           mainAxisAlignment: MainAxisAlignment.end,
-                          children: [Icon(Icons.hail), Text('hailなicon')],
+                          children: [
+                            Icon(Icons.hail),
+                            Text(
+                              'hailという名前のiconです。',
+                              // ellipsisが効かない。そもそもメニュの名前なんて
+                              // overflowさせちゃいけないから、保留
+                              overflow: TextOverflow.ellipsis,
+                            )
+                          ],
                         )
                       : Icon(Icons.hail),
                   children: [
