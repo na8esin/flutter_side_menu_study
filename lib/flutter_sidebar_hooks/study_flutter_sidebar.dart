@@ -99,7 +99,6 @@ class Sidebar extends HookWidget {
   // 引数のstringはtabId. tabIdってなに？
   final void Function(Key) onTabChanged;
   final List<int>? activeTabIndices;
-  static const double _maxSidebarWidth = 160;
 
   @override
   Widget build(BuildContext context) {
@@ -112,14 +111,11 @@ class Sidebar extends HookWidget {
     final x = animationController.value;
     useListenable(animationController);
 
-    final _sidebarWidth = useState(_maxSidebarWidth);
-    final mediaQuery = MediaQuery.of(context);
-    _sidebarWidth.value = min(mediaQuery.size.width * 0.7, _maxSidebarWidth);
     return ConstrainedBox(
       constraints: BoxConstraints(
           minWidth: _iconSizeWithPadding,
           // 初期が_iconSizeWithPaddingで最後は160になる
-          maxWidth: (x + 1) * _iconSizeWithPadding + x * 64),
+          maxWidth: (2.5 * x + 1) * _iconSizeWithPadding),
       child: Column(
         children: [
           // header部分
@@ -218,7 +214,7 @@ class SidebarItem extends HookWidget {
         selected: controller.isSelected(_indices),
         contentPadding: animationController.isDismissed
             ? EdgeInsets.zero
-            : EdgeInsets.only(left: 16.0 + 20.0 * (_indices.length - 1)),
+            : EdgeInsets.only(left: 4.0 + 8.0 * (_indices.length - 1)),
         title: TitleWithIcon(root.title, root.iconData),
         onTap: () {
           controller.setActiveTabIndices(_indices);
@@ -249,7 +245,7 @@ class SidebarItem extends HookWidget {
       tilePadding: animationController.isDismissed
           ? EdgeInsets.zero
           : EdgeInsets.only(
-              left: 4.0 + 16.0 * (_indices.length - 1),
+              left: 4.0 + 8.0 * (_indices.length - 1),
               right: 4.0,
             ),
       selected: controller.isSelected(_indices),
@@ -257,7 +253,7 @@ class SidebarItem extends HookWidget {
         root.title,
         root.iconData,
       ),
-      trailing: animationController.isCompleted ? null : SizedBox.shrink(),
+      trailing: SizedBox.shrink(),
       children: children,
     );
   }
@@ -270,6 +266,7 @@ class TitleWithIcon extends HookWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 左メニュー全体が開いてるかどうか
     final isExpanded = useProvider(sidebarItemProvider.state);
     return isExpanded
         ? Row(

@@ -5,6 +5,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../rotating_translation_arrow.dart';
 import '../flutter_sidebar_hooks/study_custom_expansion_tile.dart';
+import '../flutter_sidebar_hooks/study_flutter_sidebar.dart';
 
 void main() {
   runApp(ProviderScope(
@@ -36,6 +37,7 @@ class MyHomePage extends HookWidget {
         duration: const Duration(milliseconds: 250), initialValue: 1.0);
     final x = controller.value;
     useListenable(controller);
+    final sidebarItemController = useProvider(sidebarItemProvider);
     return Row(
       children: [
         // NavigationRailでもConstrainedBoxが使われてる
@@ -50,6 +52,7 @@ class MyHomePage extends HookWidget {
               children: [
                 RotatingTranslationArrow(
                   controller: controller,
+                  onTapAdditional: sidebarItemController.toggle,
                 ),
                 SizedBox(
                   height: 20,
@@ -70,7 +73,7 @@ class MyHomePage extends HookWidget {
                           children: [
                             Icon(Icons.hail),
                             Text(
-                              'hailという名前のiconです。',
+                              'hail',
                               // ellipsisが効かない。そもそもメニュの名前なんて
                               // overflowさせちゃいけないから、保留
                               overflow: TextOverflow.ellipsis,
@@ -86,6 +89,14 @@ class MyHomePage extends HookWidget {
                     )
                   ],
                   //trailing: SizedBox.shrink(),
+                ),
+                CustomExpansionTile(
+                  // widgetを一つ挟むとoverflowする気がする
+                  title: TitleWithIcon(
+                    Text('hello'),
+                    Icons.ac_unit,
+                  ),
+                  trailing: SizedBox.shrink(),
                 ),
                 // 対照実験。こいつもoverflowする
                 ExpansionTile(
