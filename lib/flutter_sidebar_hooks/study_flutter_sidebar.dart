@@ -135,21 +135,17 @@ class Sidebar extends HookWidget {
             ),
           ),
           Expanded(
-            child: Material(
-              // ここは第一階層を処理するListView
-              // 二階層以降はSidebarItemの再帰処理で作るから
-              child: ListView.builder(
-                itemBuilder: (BuildContext context, int index) => SidebarItem(
-                  data: tabs[index],
-                  controller: controller,
-                  animationController: animationController,
-                  onTabChanged: onTabChanged,
-                  // builderが作り出すただの連番
-                  index: index,
-                ),
-                // 第一階層のListのlength
-                itemCount: tabs.length,
+            child: ListView.builder(
+              itemBuilder: (BuildContext context, int index) => SidebarItem(
+                data: tabs[index],
+                controller: controller,
+                animationController: animationController,
+                onTabChanged: onTabChanged,
+                // builderが作り出すただの連番
+                index: index,
               ),
+              // 第一階層のListのlength
+              itemCount: tabs.length,
             ),
           ),
         ],
@@ -275,14 +271,20 @@ class TitleWithIcon extends HookWidget {
   @override
   Widget build(BuildContext context) {
     final isExpanded = useProvider(sidebarItemProvider.state);
-    return Row(
-      children: [
-        Icon(
-          iconData,
-          size: 16,
-        ),
-        if (isExpanded) title,
-      ],
-    );
+    return isExpanded
+        ? Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                iconData,
+                size: 16,
+              ),
+              title,
+            ],
+          )
+        : Icon(
+            iconData,
+            size: 16,
+          );
   }
 }
