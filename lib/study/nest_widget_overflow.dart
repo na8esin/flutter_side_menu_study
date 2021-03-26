@@ -31,12 +31,14 @@ class MyHomePage extends HookWidget {
               children: [
                 RotatingTranslationArrow(
                   controller: controller,
-                  onTapAdditional: () {
+                  onTapAdditional: () async {
                     titleWithIconController.state =
                         !titleWithIconController.state;
                   },
                 ),
-                TitleWithIconHook(), // こいつだけ変化がちょっと早くてoverflowする
+                // こいつはanimationの変化を待たずに変化しちゃうので、
+                // 独立したproviderを使うのはNG
+                TitleWithIconHook(),
                 controller.isCompleted
                     ? Row(
                         children: [Icon(Icons.ac_unit), Text('ac_unit')],
