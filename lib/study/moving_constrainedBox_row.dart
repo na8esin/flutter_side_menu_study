@@ -75,6 +75,23 @@ class MyHomePage extends HookWidget {
                       : Icon(Icons.hail),
                   trailing: SizedBox.shrink(),
                 ),
+                // じゃあtrailingじゃなくて、titleにくっつける
+                ExpansionTile(
+                  title: controller.isCompleted
+                      ? Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.hail),
+                            Text('hailなicon'),
+                            Icon(
+                              Icons.arrow_drop_down,
+                              size: 4.0,
+                            )
+                          ],
+                        )
+                      : Icon(Icons.hail),
+                  trailing: SizedBox.shrink(),
+                ),
                 // 対照実験。こいつは大丈夫
                 ListTile(
                   title: controller.isCompleted
