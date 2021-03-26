@@ -142,6 +142,7 @@ class Sidebar extends HookWidget {
                 itemBuilder: (BuildContext context, int index) => SidebarItem(
                   data: tabs[index],
                   controller: controller,
+                  animationController: animationController,
                   onTabChanged: onTabChanged,
                   // builderが作り出すただの連番
                   index: index,
@@ -180,6 +181,7 @@ class SidebarItem extends HookWidget {
 
   /// 主にタブの選択状態の管理
   final SidebarController controller;
+  final AnimationController animationController;
 
   /// 押した時に右の画面を変化させるみたいな使い方
   final void Function(Key) onTabChanged;
@@ -190,6 +192,7 @@ class SidebarItem extends HookWidget {
     required this.data,
     required this.controller,
     required this.onTabChanged,
+    required this.animationController,
     this.index,
     this.indices,
   }) : assert(
@@ -211,14 +214,16 @@ class SidebarItem extends HookWidget {
 
     // stateの監視のためだけに必要
     useProvider(isSelectedProvider(controller).state);
+    useListenable(animationController);
 
     if (root.children == null)
       // _indicesは自分のindexになるはず。
       return ListTile(
         selected: controller.isSelected(_indices),
-        contentPadding:
-            EdgeInsets.only(left: 16.0 + 20.0 * (_indices.length - 1)),
-        title: TitleWithIcon(root.title, Icon(Icons.note)),
+        contentPadding: animationController.isDismissed
+            ? EdgeInsets.zero
+            : EdgeInsets.only(left: 16.0 + 20.0 * (_indices.length - 1)),
+        title: TitleWithIcon(root.title, root.iconData),
         onTap: () {
           controller.setActiveTabIndices(_indices);
           // 右のメイン画面とかを変化させる
@@ -237,6 +242,7 @@ class SidebarItem extends HookWidget {
         SidebarItem(
           data: item,
           controller: controller,
+          animationController: animationController,
           onTabChanged: onTabChanged,
           indices: itemIndices,
         ),
@@ -244,33 +250,37 @@ class SidebarItem extends HookWidget {
     }
 
     return CustomExpansionTile(
-      tilePadding: EdgeInsets.only(
-        left: 16.0 + 20.0 * (_indices.length - 1),
-        right: 12.0,
-      ),
+      tilePadding: animationController.isDismissed
+          ? EdgeInsets.zero
+          : EdgeInsets.only(
+              left: 4.0 + 16.0 * (_indices.length - 1),
+              right: 4.0,
+            ),
       selected: controller.isSelected(_indices),
-      title: TitleWithIcon(root.title, Icon(Icons.note)),
+      title: TitleWithIcon(
+        root.title,
+        root.iconData,
+      ),
+      trailing: animationController.isCompleted ? null : SizedBox.shrink(),
       children: children,
     );
   }
 }
 
 class TitleWithIcon extends HookWidget {
-  TitleWithIcon(this.title, this.icon);
+  TitleWithIcon(this.title, this.iconData);
   final Widget title;
-  final Icon icon;
+  final IconData iconData;
 
   @override
   Widget build(BuildContext context) {
     final isExpanded = useProvider(sidebarItemProvider.state);
     return Row(
       children: [
-        isExpanded
-            ? Padding(
-                padding: const EdgeInsets.only(right: 4.0),
-                child: icon,
-              )
-            : icon,
+        Icon(
+          iconData,
+          size: 16,
+        ),
         if (isExpanded) title,
       ],
     );

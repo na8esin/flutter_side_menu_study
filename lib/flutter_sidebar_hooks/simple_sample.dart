@@ -44,26 +44,27 @@ class MyHomePage extends HookWidget {
           tabs: [
             // objectKeyとかの方がいいかも？
             SidebarTab(
-                key: ValueKey('Chap_A'),
-                title: Text(
-                  'Chapter A',
-                  // なぜか効かない
-                  overflow: TextOverflow.ellipsis,
-                ),
-                icon: Icon(Icons.note)),
+              key: ValueKey('Chap_A'),
+              title: Text(
+                'Chapter A',
+                // なぜか効かない
+                overflow: TextOverflow.ellipsis,
+              ),
+              iconData: Icons.android,
+            ),
             SidebarTab(
               key: ValueKey('Chap_B'),
               title: Text('Chap B'),
-              icon: Icon(Icons.note),
+              iconData: Icons.note,
               children: [
                 SidebarTab(
                     key: ValueKey('Chap_B1'),
                     title: Text('Chap B1'),
-                    icon: Icon(Icons.note)),
+                    iconData: Icons.note),
                 SidebarTab(
                     key: ValueKey('Chap_B2'),
                     title: Text('Chap B2'),
-                    icon: Icon(Icons.note)),
+                    iconData: Icons.note),
               ],
             ),
           ],
