@@ -40,7 +40,6 @@ class MyHomePage extends HookWidget {
   @override
   Widget build(BuildContext context) {
     const _iconSizeWithPadding = 48.0;
-    final selectIndex = useState(0);
     final controller = useAnimationController(
         duration: const Duration(milliseconds: 250), initialValue: 1.0);
     final x = controller.value;
