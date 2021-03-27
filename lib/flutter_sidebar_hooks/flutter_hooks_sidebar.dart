@@ -25,9 +25,8 @@ class SidebarController extends StateNotifier<SidebarParameter> {
   // 最初のタブを見つけだしてアクティブにする
   void init() {
     if (state.activeTabIndices == null) {
-      final newActiveTabData = _getFirstTabIndex(state.tabs, []);
       // 例えば[0, 0]が返ってくる
-      List<int> newActiveTabIndices = newActiveTabData.indices;
+      List<int> newActiveTabIndices = _getFirstTabIndex(state.tabs, []);
       //String tabId = newActiveTabData.tabId;
       if (newActiveTabIndices.length > 0) {
         setActiveTabIndices(newActiveTabIndices);
@@ -39,24 +38,18 @@ class SidebarController extends StateNotifier<SidebarParameter> {
   /// メソッド名通り最初のタブしか処理されてない
   ///
   /// return:
-  ///   tabId: 最初のタブのchildrenの最初のタブ
   ///   indices: 最初のタブが何階層か。
-  FirstTabIndex _getFirstTabIndex(List<SidebarTab> tabs, List<int> indices) {
-    Key? tabId;
+  List<int> _getFirstTabIndex(List<SidebarTab> tabs, List<int> indices) {
     if (tabs.length > 0) {
       SidebarTab firstTab = tabs[0];
-
-      tabId = firstTab.key;
       indices.add(0);
 
       if (firstTab.children != null) {
         // 再帰的に実行
-        final tabData = _getFirstTabIndex(firstTab.children!, indices);
-        indices = tabData.indices;
-        tabId = tabData.key;
+        indices = _getFirstTabIndex(firstTab.children!, indices);
       }
     }
-    return FirstTabIndex(indices, tabId);
+    return indices;
   }
 
   /// _indicesMatchはListTileとCustomExpansionTileのselectedを決めるための関数
@@ -184,8 +177,6 @@ class SidebarItem extends HookWidget {
   /// rootはthis.data
   @override
   Widget build(BuildContext context) {
-    final root = data;
-
     /// 一番上の要素にはindicesがなくてindexがただ連番で入る
     /// chapterA => [0]
     /// chapterB => [1]
@@ -195,25 +186,25 @@ class SidebarItem extends HookWidget {
     useProvider(isSelectedProvider(controller).state);
     useListenable(animationController);
 
-    if (root.children == null)
+    if (data.children == null)
       // _indicesは自分のindexになるはず。
       return ListTile(
         selected: controller.isSelected(_indices),
         contentPadding: animationController.isDismissed
             ? EdgeInsets.zero
             : EdgeInsets.only(left: 4.0 + 8.0 * (_indices.length - 1)),
-        title: TitleWithIcon(root.title, root.iconData, animationController),
+        title: TitleWithIcon(data.title, data.iconData, animationController),
         onTap: () {
           controller.setActiveTabIndices(_indices);
           // 右のメイン画面とかを変化させる
-          if (onTabChanged != null) onTabChanged(root.key);
+          if (onTabChanged != null) onTabChanged(data.key);
         },
       );
 
     // 再帰的に子要素を作るところ
     List<Widget> children = [];
-    for (int i = 0; i < root.children!.length; i++) {
-      final item = root.children![i];
+    for (int i = 0; i < data.children!.length; i++) {
+      final item = data.children![i];
       // ここでの_indicesは親のindexになる
       // chaA => [0], chaB => [1]
       final itemIndices = [..._indices, i];
@@ -236,7 +227,7 @@ class SidebarItem extends HookWidget {
               right: 4.0,
             ),
       selected: controller.isSelected(_indices),
-      title: TitleWithIcon(root.title, root.iconData, animationController),
+      title: TitleWithIcon(data.title, data.iconData, animationController),
       trailing: SizedBox.shrink(),
       children: children,
     );

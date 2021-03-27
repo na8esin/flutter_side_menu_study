@@ -28,6 +28,24 @@ class LeftMenuSelectedController extends StateNotifier<String> {
   }
 }
 
+class RoutePathController extends StateNotifier<RoutePath> {
+  RoutePathController(state) : super(state);
+
+  setRoutePath(RoutePath path) {
+    state = path;
+  }
+}
+
+abstract class RoutePath {}
+
+class ChapAPath extends RoutePath {}
+
+class ChapBPath extends RoutePath {}
+
+class ChapB1Path extends RoutePath {}
+
+class ChapB2Path extends RoutePath {}
+
 final leftMenuSelectedProvider =
     StateNotifierProvider((ref) => LeftMenuSelectedController('Chap_B'));
 
@@ -45,6 +63,7 @@ class MyHomePage extends HookWidget {
           tabs: [
             // objectKeyとかの方がいいかも？
             SidebarTab(
+              routePath: ChapAPath(),
               key: ValueKey('Chap_A'),
               // Stringでもいいかもしれない
               title: Text(
@@ -55,15 +74,18 @@ class MyHomePage extends HookWidget {
               iconData: Icons.android,
             ),
             SidebarTab(
+              routePath: ChapBPath(),
               key: ValueKey('Chap_B'),
               title: Text('Chap B'),
               iconData: Icons.note,
               children: [
                 SidebarTab(
+                    routePath: ChapB1Path(),
                     key: ValueKey('Chap_B1'),
                     title: Text('Chap B1'),
                     iconData: Icons.note),
                 SidebarTab(
+                    routePath: ChapB2Path(),
                     key: ValueKey('Chap_B2'),
                     title: Text('Chap B2'),
                     iconData: Icons.note),
