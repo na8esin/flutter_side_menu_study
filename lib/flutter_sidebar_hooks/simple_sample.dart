@@ -35,7 +35,7 @@ class MyHomePage extends HookWidget {
   Widget build(BuildContext context) {
     final _controller = useProvider(leftMenuSelectedProvider);
 
-    // 一つしか無い場合は常に選択状態。そりゃそうか。
+    // 一つしか無い場合は常に選択状態。
     // sidebarTabにPathを入れられるようにすれば便利？
     // ブラウザバックとうまく連動できるか？
     return Row(
