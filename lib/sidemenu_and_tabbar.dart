@@ -35,6 +35,9 @@ class MyScaffold extends HookWidget {
   }
 }
 
+/// 回転しながら移動する矢印とそれに伴って幅が変わるConstrainedBox
+/// ExpansionTile, ListTile, TabController
+/// を使ったサンプル
 class MyHomePage extends HookWidget {
   @override
   Widget build(BuildContext context) {
@@ -51,7 +54,7 @@ class MyHomePage extends HookWidget {
           constraints: BoxConstraints(
               minWidth: _iconSizeWithPadding,
               // 初期が_iconSizeWithPaddingで最後は160になる
-              maxWidth: (x + 1) * _iconSizeWithPadding + x * 64),
+              maxWidth: (2.5 * x + 1) * _iconSizeWithPadding),
           child: Align(
             alignment: Alignment.topCenter,
             child: ListView(
