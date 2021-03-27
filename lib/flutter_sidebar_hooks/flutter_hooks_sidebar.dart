@@ -79,7 +79,7 @@ final sidebarControllerProvider = StateNotifierProvider.family
 
 /// SidebarがすべてのSidebarItemの頂点にいて制御している
 /// SidebarItemは再帰的に増えていく
-class Sidebar extends HookWidget {
+class Sidebar<T> extends HookWidget {
   Sidebar(
       {required this.tabs,
       required this.onTabChanged, // exampleでセットされる
@@ -90,7 +90,7 @@ class Sidebar extends HookWidget {
   // 型が曖昧だったの作り替えた
   final List<SidebarTab> tabs;
   // 引数のstringはtabId. tabIdってなに？
-  final void Function(Key) onTabChanged;
+  final void Function(T) onTabChanged;
   final List<int>? activeTabIndices;
 
   @override
@@ -148,7 +148,7 @@ final isSelectedProvider =
 
 /// 再帰的なwidget
 /// 子要素はヘッダをタップした時に作られる
-class SidebarItem extends HookWidget {
+class SidebarItem<T> extends HookWidget {
   final SidebarTab data;
 
   /// 主にタブの選択状態の管理
@@ -156,7 +156,7 @@ class SidebarItem extends HookWidget {
   final AnimationController animationController;
 
   /// 押した時に右の画面を変化させるみたいな使い方
-  final void Function(Key) onTabChanged;
+  final void Function(T) onTabChanged;
   final int? index;
   final List<int>? indices;
 
@@ -197,7 +197,7 @@ class SidebarItem extends HookWidget {
         onTap: () {
           controller.setActiveTabIndices(_indices);
           // 右のメイン画面とかを変化させる
-          if (onTabChanged != null) onTabChanged(data.key);
+          if (onTabChanged != null) onTabChanged(data.routePath);
         },
       );
 

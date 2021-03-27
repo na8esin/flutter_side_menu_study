@@ -64,7 +64,6 @@ class MyHomePage extends HookWidget {
             // objectKeyとかの方がいいかも？
             SidebarTab(
               routePath: ChapAPath(),
-              key: ValueKey('Chap_A'),
               // Stringでもいいかもしれない
               title: Text(
                 'Chapter A',
@@ -75,18 +74,15 @@ class MyHomePage extends HookWidget {
             ),
             SidebarTab(
               routePath: ChapBPath(),
-              key: ValueKey('Chap_B'),
               title: Text('Chap B'),
               iconData: Icons.note,
               children: [
                 SidebarTab(
                     routePath: ChapB1Path(),
-                    key: ValueKey('Chap_B1'),
                     title: Text('Chap B1'),
                     iconData: Icons.note),
                 SidebarTab(
                     routePath: ChapB2Path(),
-                    key: ValueKey('Chap_B2'),
                     title: Text('Chap B2'),
                     iconData: Icons.note),
               ],
