@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'rotating_translation_arrow.dart';
+import 'flutter_sidebar_hooks/rotating_translation_arrow.dart';
 
 /// 目標 : firebaseのコンソールみたいな
 /// ExpansionTileの足りない要素

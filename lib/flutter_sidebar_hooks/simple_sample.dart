@@ -22,6 +22,7 @@ class MyScaffold extends HookWidget {
 class LeftMenuSelectedController extends StateNotifier<String> {
   LeftMenuSelectedController(state) : super(state);
 
+  // onTabChangeに渡す
   setKey(Key tabId) {
     if (tabId is ValueKey<String>) state = tabId.value;
   }
