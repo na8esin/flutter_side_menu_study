@@ -37,7 +37,6 @@ class MyHomePage extends HookWidget {
         duration: const Duration(milliseconds: 250), initialValue: 1.0);
     final x = controller.value;
     useListenable(controller);
-    final sidebarItemController = useProvider(sidebarItemProvider);
     return Row(
       children: [
         // NavigationRailでもConstrainedBoxが使われてる
@@ -52,7 +51,6 @@ class MyHomePage extends HookWidget {
               children: [
                 RotatingTranslationArrow(
                   controller: controller,
-                  onTapAdditional: sidebarItemController.toggle,
                 ),
                 SizedBox(
                   height: 20,
@@ -95,6 +93,7 @@ class MyHomePage extends HookWidget {
                   title: TitleWithIcon(
                     Text('hello'),
                     Icons.ac_unit,
+                    controller,
                   ),
                   trailing: SizedBox.shrink(),
                 ),
