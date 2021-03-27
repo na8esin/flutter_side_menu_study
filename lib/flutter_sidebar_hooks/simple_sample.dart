@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
-import 'study_flutter_sidebar.dart';
+import 'flutter_hooks_sidebar.dart';
 import 'dto.dart';
 
 void main() {

@@ -4,8 +4,8 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import '../rotating_translation_arrow.dart';
-import '../flutter_sidebar_hooks/study_custom_expansion_tile.dart';
-import '../flutter_sidebar_hooks/study_flutter_sidebar.dart';
+import '../flutter_sidebar_hooks/custom_expansion_tile.dart';
+import '../flutter_sidebar_hooks/flutter_hooks_sidebar.dart';
 
 void main() {
   runApp(ProviderScope(

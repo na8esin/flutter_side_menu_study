@@ -4,7 +4,7 @@ import 'dart:math' show min;
 
 import 'package:flutter/material.dart';
 
-import '../flutter_sidebar_hooks/study_custom_expansion_tile.dart';
+import '../flutter_sidebar_hooks/custom_expansion_tile.dart';
 
 class Sidebar extends StatefulWidget {
   final List<Map<String, dynamic>> tabs;
