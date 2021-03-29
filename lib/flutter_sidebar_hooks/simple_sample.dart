@@ -4,7 +4,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'flutter_hooks_sidebar.dart';
-import 'dto.dart';
+import 'sidebar_tab.dart';
 
 void main() {
   runApp(ProviderScope(child: MaterialApp(home: MyScaffold())));

@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:flutter/foundation.dart';
 
-import 'dto.dart';
+import 'sidebar_tab.dart';
 
 part 'sidebar_parameter.freezed.dart';
 

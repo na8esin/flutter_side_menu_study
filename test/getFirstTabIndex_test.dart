@@ -3,7 +3,7 @@ import 'dart:developer';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_practice/flutter_sidebar_hooks/dto.dart';
+import 'package:flutter_practice/flutter_sidebar_hooks/sidebar_tab.dart';
 import 'package:test/test.dart';
 
 void main() {

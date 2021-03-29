@@ -7,7 +7,7 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'custom_expansion_tile.dart';
 import 'sidebar_parameter.dart';
-import 'dto.dart';
+import 'sidebar_tab.dart';
 import 'rotating_translation_arrow.dart';
 
 class SidebarController extends StateNotifier<SidebarParameter> {
